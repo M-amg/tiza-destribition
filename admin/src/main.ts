@@ -10,7 +10,7 @@ Sentry.init({
   sendDefaultPii: true,
   integrations: [Sentry.browserTracingIntegration()],
   tracesSampleRate: 1.0,
-  tracePropagationTargets: ['localhost', '127.0.0.1', API_BASE_URL]
+  tracePropagationTargets: ['localhost', '127.0.0.1', /^\/api\/v1/]
 });
 
 bootstrapApplication(App, appConfig)

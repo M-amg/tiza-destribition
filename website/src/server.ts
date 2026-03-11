@@ -7,8 +7,10 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import { Readable } from 'node:stream';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
+const backendOrigin = (process.env['BACKEND_ORIGIN'] || 'http://127.0.0.1:8080').replace(/\/$/, '');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
@@ -24,6 +26,66 @@ const angularApp = new AngularNodeAppEngine();
  * });
  * ```
  */
+
+app.use(['/api', '/uploads'], async (req, res, next) => {
+  try {
+    const targetUrl = new URL(req.originalUrl, backendOrigin);
+    const headers = new Headers();
+    const hasRequestBody = req.method !== 'GET' && req.method !== 'HEAD';
+
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (!value || key.toLowerCase() === 'host') {
+        continue;
+      }
+
+      if (Array.isArray(value)) {
+        for (const item of value) {
+          headers.append(key, item);
+        }
+      } else {
+        headers.set(key, value);
+      }
+    }
+
+    const requestInit: RequestInit & { duplex?: 'half' } = {
+      method: req.method,
+      headers,
+      redirect: 'manual',
+    };
+
+    if (hasRequestBody) {
+      requestInit.body = req as unknown as BodyInit;
+      // Required by Node when forwarding a streamed request body.
+      requestInit.duplex = 'half';
+    }
+
+    const upstreamResponse = await fetch(targetUrl, requestInit);
+
+    res.status(upstreamResponse.status);
+
+    upstreamResponse.headers.forEach((value, key) => {
+      if (key.toLowerCase() === 'set-cookie') {
+        return;
+      }
+
+      res.setHeader(key, value);
+    });
+
+    const setCookie = upstreamResponse.headers.getSetCookie?.();
+    if (setCookie && setCookie.length > 0) {
+      res.setHeader('set-cookie', setCookie);
+    }
+
+    if (!upstreamResponse.body) {
+      res.end();
+      return;
+    }
+
+    Readable.fromWeb(upstreamResponse.body as any).pipe(res);
+  } catch (error) {
+    next(error);
+  }
+});
 
 /**
  * Serve static files from /browser

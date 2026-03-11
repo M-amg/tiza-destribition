@@ -1,0 +1,15 @@
+[Unit]
+Description=Tiza Angular SSR Website
+After=network.target
+
+[Service]
+Type=simple
+User=swiftsell
+WorkingDirectory=/var/www/tiza/web
+EnvironmentFile=/var/www/tiza/deploy/env/website.env
+ExecStart=/usr/bin/node /var/www/tiza/web/dist/website/server/server.mjs
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
