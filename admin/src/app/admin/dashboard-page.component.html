@@ -1,0 +1,222 @@
+﻿<section class="page-head">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Welcome back! Here's what's happening with your store today.</p>
+  </div>
+</section>
+
+<section class="quick-actions">
+  <a routerLink="/products/new" class="btn btn-primary">
+    <lucide-icon [img]="iconPlus" [size]="16"></lucide-icon>
+    Add Product
+  </a>
+  <a routerLink="/coupons/new" class="btn btn-secondary">
+    <lucide-icon [img]="iconPlus" [size]="16"></lucide-icon>
+    Create Coupon
+  </a>
+  <a routerLink="/orders" class="btn btn-secondary">
+    <lucide-icon [img]="iconCart" [size]="16"></lucide-icon>
+    View Orders
+  </a>
+</section>
+
+<section class="stats-grid">
+  <article class="stat-card">
+    <div class="stat-head">
+      <small>Total Revenue</small>
+      <span class="icon-pill success"><lucide-icon [img]="iconMoney" [size]="18"></lucide-icon></span>
+    </div>
+    <strong>{{ totalRevenue | number : '1.0-2' }} DH</strong>
+    <p class="trend positive">+12.5% from last month</p>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-head">
+      <small>Total Orders</small>
+      <span class="icon-pill brand"><lucide-icon [img]="iconOrders" [size]="18"></lucide-icon></span>
+    </div>
+    <strong>{{ orders.length }}</strong>
+    <p class="trend positive">+8.2% from last month</p>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-head">
+      <small>Pending Orders</small>
+      <span class="icon-pill warning"><lucide-icon [img]="iconAlert" [size]="18"></lucide-icon></span>
+    </div>
+    <strong>{{ pendingOrders }}</strong>
+    <p class="trend warning">Requires attention</p>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-head">
+      <small>Total Customers</small>
+      <span class="icon-pill accent"><lucide-icon [img]="iconUsers" [size]="18"></lucide-icon></span>
+    </div>
+    <strong>{{ customers.length }}</strong>
+    <p class="trend positive">+18 new this month</p>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-head">
+      <small>Total Products</small>
+      <span class="icon-pill purple"><lucide-icon [img]="iconPackage" [size]="18"></lucide-icon></span>
+    </div>
+    <strong>{{ products.length }}</strong>
+    <p class="trend">{{ inventoryItems.length }} in inventory</p>
+  </article>
+
+  <article class="stat-card danger">
+    <div class="stat-head">
+      <small>Low Stock Items</small>
+      <span class="icon-pill danger"><lucide-icon [img]="iconAlert" [size]="18"></lucide-icon></span>
+    </div>
+    <strong>{{ lowStockItems.length }}</strong>
+    <p class="trend warning">Needs restocking</p>
+  </article>
+</section>
+
+<section class="charts-grid">
+  <article class="panel chart-panel">
+    <header class="panel-head">
+      <div>
+        <h2>Revenue Overview</h2>
+        <small>Last 6 months performance</small>
+      </div>
+      <span class="trend-chip"><lucide-icon [img]="iconTrend" [size]="14"></lucide-icon>+15.3%</span>
+    </header>
+
+    <div class="chart-canvas chart-canvas-lg">
+      <canvas baseChart [data]="revenueBarData" [options]="revenueBarOptions" [type]="'bar'"></canvas>
+    </div>
+  </article>
+
+  <article class="panel chart-panel">
+    <header class="panel-head">
+      <div>
+        <h2>Orders Trend</h2>
+        <small>Order volume over time</small>
+      </div>
+    </header>
+
+    <div class="chart-canvas chart-canvas-lg">
+      <canvas baseChart [data]="ordersLineData" [options]="ordersLineOptions" [type]="'line'"></canvas>
+    </div>
+  </article>
+</section>
+
+<section class="bottom-grid">
+  <article class="panel chart-panel">
+    <header class="panel-head">
+      <div>
+        <h2>Sales by Category</h2>
+        <small>Product distribution</small>
+      </div>
+    </header>
+    <div class="chart-canvas chart-canvas-md">
+      <canvas baseChart [data]="categoryPieData" [options]="categoryPieOptions" [type]="'pie'"></canvas>
+    </div>
+  </article>
+
+  <article class="panel chart-panel">
+    <header class="panel-head">
+      <div>
+        <h2>Low Stock Alerts</h2>
+        <small>Products requiring attention</small>
+      </div>
+      <a routerLink="/inventory" class="btn btn-ghost btn-sm">View All</a>
+    </header>
+
+    <div class="alert-list">
+      <div class="alert-item" *ngFor="let item of lowStockItems; trackBy: trackById">
+        <div>
+          <strong>{{ item.productName }}</strong>
+          <small>SKU: {{ item.sku }}</small>
+        </div>
+        <div class="alert-meta">
+          <span class="chip chip-danger">{{ item.stockQuantity }} left</span>
+          <small>Min: {{ item.minimumLevel }}</small>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<section class="panel mt">
+  <header class="panel-head">
+    <div>
+      <h2>Recent Orders</h2>
+      <small>Latest customer orders</small>
+    </div>
+    <a routerLink="/orders" class="btn btn-ghost btn-sm">View All</a>
+  </header>
+
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Customer</th>
+          <th>Type</th>
+          <th>Date</th>
+          <th>Total</th>
+          <th>Payment</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of latestOrders; trackBy: trackById">
+          <td>{{ order.orderNumber }}</td>
+          <td>
+            <strong>{{ order.customerName }}</strong>
+            <small>{{ order.customerEmail }}</small>
+          </td>
+          <td><span class="chip" [class.chip-brand]="order.customerType === 'B2B'">{{ order.customerType }}</span></td>
+          <td>{{ order.date }}</td>
+          <td>{{ order.total | number : '1.2-2' }} DH</td>
+          <td><span [class]="paymentStatusClasses[order.paymentStatus]">{{ order.paymentStatus }}</span></td>
+          <td><span [class]="orderStatusClasses[order.status]">{{ order.status }}</span></td>
+          <td>
+            <a [routerLink]="['/orders', order.id]" class="btn btn-ghost btn-sm btn-icon">
+              <lucide-icon [img]="iconEye" [size]="16"></lucide-icon>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel mt">
+  <header class="panel-head">
+    <div>
+      <h2>Recent Customers</h2>
+      <small>Newly registered customers</small>
+    </div>
+    <a routerLink="/customers" class="btn btn-ghost btn-sm">View All</a>
+  </header>
+
+  <div class="customer-grid">
+    <article *ngFor="let customer of recentCustomers; trackBy: trackById" class="customer-card">
+      <div class="identity">
+        <span>{{ customer.name.slice(0, 1) }}</span>
+        <div>
+          <strong>{{ customer.name }}</strong>
+          <small>{{ customer.email }}</small>
+        </div>
+      </div>
+      <div class="meta">
+        <div>
+          <small>Orders</small>
+          <strong>{{ customer.totalOrders }}</strong>
+        </div>
+        <div>
+          <small>Total Spent</small>
+          <strong>{{ customer.totalSpent | number : '1.0-0' }} DH</strong>
+        </div>
+        <span class="chip" [class.chip-brand]="customer.customerType === 'B2B'">{{ customer.customerType }}</span>
+      </div>
+    </article>
+  </div>
+</section>

@@ -1,0 +1,105 @@
+<footer class="mt-20 bg-[#111827] text-slate-300">
+  <div class="container mx-auto px-4 py-14">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+      <div>
+        <a routerLink="/" class="mb-5 flex items-center gap-3">
+          @if (storeInfo().logoUrl) {
+            <img [src]="storeInfo().logoUrl!" [alt]="storeInfo().name" class="h-11 w-11 rounded-2xl bg-white object-contain p-1" />
+          } @else {
+            <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-lg font-black text-white">T</span>
+          }
+          <span class="text-2xl font-black tracking-[0.08em] text-white">{{ storeInfo().name }}</span>
+        </a>
+
+        <p class="max-w-sm text-sm leading-6 text-slate-400">
+          Fresh products, reliable delivery, and a cleaner shopping experience for retail and wholesale customers.
+        </p>
+
+        <div class="mt-6 space-y-3 text-sm">
+          <div class="flex items-center gap-3">
+            <lucide-icon name="phone" [size]="16" class="text-primary"></lucide-icon>
+            <span>{{ storeInfo().supportPhone || storeInfo().phone }}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <lucide-icon name="mail" [size]="16" class="text-primary"></lucide-icon>
+            <span>{{ storeInfo().supportEmail || storeInfo().email }}</span>
+          </div>
+          <div class="flex items-start gap-3">
+            <lucide-icon name="map-pin" [size]="16" class="mt-0.5 text-primary"></lucide-icon>
+            <span>
+              @for (line of storeInfo().addressLines; track line; let isLast = $last) {
+                {{ line }}@if (!isLast) { <br /> }
+              }
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="mb-5 text-lg font-semibold text-white">Quick Links</h3>
+        <ul class="space-y-3 text-sm">
+          <li><a routerLink="/" class="footer-link">{{ 'common.home' | t }}</a></li>
+          <li><a routerLink="/shop" class="footer-link">{{ 'common.shop' | t }}</a></li>
+          <li><a routerLink="/about" class="footer-link">{{ 'common.about' | t }}</a></li>
+          <li><a routerLink="/contact" class="footer-link">{{ 'common.contact' | t }}</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="mb-5 text-lg font-semibold text-white">Customer Service</h3>
+        <ul class="space-y-3 text-sm">
+          <li><a routerLink="/track-order" class="footer-link">Track Your Order</a></li>
+          <li><a [routerLink]="accountOrdersRoute()" class="footer-link">My Orders</a></li>
+          <li><a routerLink="/contact" class="footer-link">Shipping & Delivery</a></li>
+          <li><a routerLink="/contact" class="footer-link">Returns & Refunds</a></li>
+          <li><a routerLink="/contact" class="footer-link">Help Center</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="mb-5 text-lg font-semibold text-white">Follow & Trust</h3>
+        <div class="mb-6 flex gap-3">
+          @if (storeInfo().facebookUrl) {
+            <a [href]="storeInfo().facebookUrl!" target="_blank" rel="noreferrer" class="footer-social" aria-label="Facebook">
+              <lucide-icon name="facebook" [size]="18"></lucide-icon>
+            </a>
+          }
+          @if (storeInfo().instagramUrl) {
+            <a [href]="storeInfo().instagramUrl!" target="_blank" rel="noreferrer" class="footer-social" aria-label="Instagram">
+              <lucide-icon name="instagram" [size]="18"></lucide-icon>
+            </a>
+          }
+          @if (storeInfo().twitterUrl) {
+            <a [href]="storeInfo().twitterUrl!" target="_blank" rel="noreferrer" class="footer-social" aria-label="Twitter">
+              <lucide-icon name="twitter" [size]="18"></lucide-icon>
+            </a>
+          }
+          @if (storeInfo().linkedinUrl) {
+            <a [href]="storeInfo().linkedinUrl!" target="_blank" rel="noreferrer" class="footer-social" aria-label="LinkedIn">
+              <lucide-icon name="linkedin" [size]="18"></lucide-icon>
+            </a>
+          }
+        </div>
+
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <p class="text-sm font-semibold text-white">Need support?</p>
+          <p class="mt-2 text-sm leading-6 text-slate-400">
+            Our team can help with delivery questions, account access, and order follow-up.
+          </p>
+          <a routerLink="/contact" class="mt-4 inline-flex rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white">
+            Contact Support
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10 flex flex-col gap-4 border-t border-white/10 pt-8 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+      <p>&copy; {{ year }} {{ storeInfo().name }}. {{ 'footer.rightsReserved' | t }}</p>
+      <div class="flex flex-wrap items-center gap-3 text-slate-400">
+        <span class="rounded-full border border-white/10 px-3 py-1">Secure checkout</span>
+        <span class="rounded-full border border-white/10 px-3 py-1">Fast delivery</span>
+        <span class="rounded-full border border-white/10 px-3 py-1">Customer support</span>
+      </div>
+    </div>
+  </div>
+</footer>

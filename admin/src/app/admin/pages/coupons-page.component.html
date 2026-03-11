@@ -1,0 +1,157 @@
+<section class="page-head coupons-head">
+  <div>
+    <h1>Coupons</h1>
+    <p>Manage discount codes and promotional campaigns.</p>
+  </div>
+  <a routerLink="/coupons/new" class="btn btn-primary">
+    <lucide-icon [img]="iconPlus" [size]="16"></lucide-icon>
+    Create Coupon
+  </a>
+</section>
+
+<section class="stats-grid">
+  <article class="panel stat-card">
+    <small>Total Coupons</small>
+    <strong>{{ totalCoupons }}</strong>
+  </article>
+  <article class="panel stat-card">
+    <small>Active Coupons</small>
+    <strong class="success">{{ activeCoupons }}</strong>
+  </article>
+  <article class="panel stat-card">
+    <small>Total Usage</small>
+    <strong class="primary">{{ totalUsage }}</strong>
+  </article>
+  <article class="panel stat-card">
+    <small>B2B Coupons</small>
+    <strong class="brand">{{ activeB2BCoupons }}</strong>
+  </article>
+</section>
+
+<section class="panel filters-panel">
+  <div class="filters-grid">
+    <div class="field">
+      <label for="coupon-search">Search</label>
+      <div class="search-wrap">
+        <lucide-icon class="search-icon" [img]="iconSearch" [size]="16"></lucide-icon>
+        <input
+          id="coupon-search"
+          type="search"
+          placeholder="Search coupons..."
+          [(ngModel)]="searchTerm"
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="coupon-status">Status</label>
+      <select id="coupon-status" [(ngModel)]="statusFilter">
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+        <option value="expired">Expired</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="coupon-segment">Customer Segment</label>
+      <select id="coupon-segment" [(ngModel)]="segmentFilter">
+        <option value="all">All Segments</option>
+        <option value="B2B">B2B Only</option>
+        <option value="B2C">B2C Only</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<section class="panel coupons-table-panel">
+  <p class="message error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="message muted" *ngIf="loading">Loading coupons...</p>
+
+  <div class="list-meta">
+    <p>Showing {{ filteredCoupons.length }} of {{ totalCoupons }} coupons</p>
+  </div>
+
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Value</th>
+          <th>Segment</th>
+          <th>Usage</th>
+          <th>Valid Period</th>
+          <th>Status</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="!loading && filteredCoupons.length === 0">
+          <td colspan="9" class="empty-cell">No coupons found</td>
+        </tr>
+
+        <tr *ngFor="let coupon of filteredCoupons; trackBy: trackById">
+          <td>
+            <div class="code-cell">
+              <span class="coupon-code mono">{{ coupon.code }}</span>
+              <button type="button" class="btn btn-ghost btn-sm btn-icon action-btn" (click)="copyCode(coupon.code)" aria-label="Copy code">
+                <lucide-icon [img]="iconCopy" [size]="14"></lucide-icon>
+              </button>
+            </div>
+          </td>
+          <td>
+            <strong>{{ coupon.name }}</strong>
+            <small>{{ coupon.description }}</small>
+          </td>
+          <td><span class="badge-outline">{{ coupon.type === 'percentage' ? 'Percentage' : 'Fixed' }}</span></td>
+          <td>
+            <strong>{{ couponValueLabel(coupon) }}</strong>
+            <small *ngIf="coupon.maxDiscountCap">Cap: {{ coupon.maxDiscountCap | number : '1.0-0' }} DH</small>
+          </td>
+          <td>
+            <span
+              class="segment-badge"
+              [class.segment-b2b]="coupon.segment === 'B2B'"
+              [class.segment-b2c]="coupon.segment === 'B2C'"
+              [class.segment-all]="coupon.segment === 'all'"
+            >
+              {{ coupon.segment }}
+            </span>
+          </td>
+          <td>
+            <strong>{{ coupon.usedCount }}</strong>
+            <small *ngIf="coupon.usageLimitTotal">/ {{ coupon.usageLimitTotal }}</small>
+          </td>
+          <td>
+            <div>
+              <strong>{{ coupon.startDate }}</strong>
+              <small>{{ coupon.endDate || 'No expiration' }}</small>
+            </div>
+          </td>
+          <td><span [class]="statusChipClass[coupon.status]">{{ coupon.status }}</span></td>
+          <td>
+            <div class="actions">
+              <a [routerLink]="['/coupons', coupon.id]" class="btn btn-ghost btn-sm btn-icon action-btn" aria-label="View coupon">
+                <lucide-icon [img]="iconEye" [size]="16"></lucide-icon>
+              </a>
+              <a [routerLink]="['/coupons', coupon.id, 'edit']" class="btn btn-ghost btn-sm btn-icon action-btn" aria-label="Edit coupon">
+                <lucide-icon [img]="iconEdit" [size]="16"></lucide-icon>
+              </a>
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm btn-icon action-btn btn-danger-ghost"
+                [disabled]="deletingId === coupon.id"
+                (click)="deleteCoupon(coupon)"
+                aria-label="Delete coupon"
+              >
+                <lucide-icon [img]="iconDelete" [size]="16"></lucide-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

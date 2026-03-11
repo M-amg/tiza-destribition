@@ -1,0 +1,52 @@
+﻿.cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.metric small {
+  color: var(--muted-text);
+}
+
+.metric strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1.35rem;
+}
+
+.form-panel {
+  margin-bottom: 0.9rem;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0.8rem 0;
+}
+
+.controls label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.84rem;
+}
+
+.controls input,
+.controls select {
+  border: 1px solid var(--border-color);
+  border-radius: 0.6rem;
+  height: 2.2rem;
+  padding: 0 0.6rem;
+}
+
+.saved {
+  color: #15803d;
+}
+
+@media (max-width: 900px) {
+  .cards-row,
+  .controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

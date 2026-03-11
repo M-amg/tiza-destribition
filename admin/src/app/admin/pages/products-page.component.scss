@@ -1,0 +1,253 @@
+.products-head {
+  align-items: center;
+}
+
+.filters-panel {
+  padding: 1.2rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: 2fr repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-size: 0.82rem;
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+.search-wrap {
+  position: relative;
+}
+
+.search-wrap input {
+  padding-left: 2.2rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+.price-view-row {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.price-view-row strong {
+  font-size: 0.96rem;
+}
+
+.price-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem;
+  border-radius: calc(var(--radius) + 0.05rem);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.toggle-btn {
+  border: none;
+  background: transparent;
+  color: var(--muted-foreground);
+  min-height: 2.1rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: calc(var(--radius) - 2px);
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.toggle-btn:hover {
+  color: var(--foreground);
+}
+
+.toggle-btn.active-b2c {
+  background: var(--card);
+  color: #f97316;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+}
+
+.toggle-btn.active-b2b {
+  background: var(--card);
+  color: var(--primary);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+}
+
+.list-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0.2rem 0;
+}
+
+.list-meta p {
+  font-size: 0.82rem;
+  color: var(--muted-foreground);
+}
+
+.products-table-panel {
+  padding: 1rem;
+}
+
+.error-message {
+  margin: 0 0 0.6rem;
+  color: #b91c1c;
+  font-size: 0.85rem;
+}
+
+.loading-message {
+  margin: 0 0 0.6rem;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+}
+
+.products-table .check-col {
+  width: 2.8rem;
+}
+
+.products-table input[type='checkbox'] {
+  accent-color: var(--primary);
+}
+
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.product-cell img {
+  width: 3rem;
+  height: 3rem;
+  max-width: 3rem;
+  max-height: 3rem;
+  border-radius: 0.5rem;
+  object-fit: contain;
+  flex-shrink: 0;
+  padding: 0.2rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.product-cell strong,
+.product-cell small {
+  display: block;
+}
+
+.product-cell small {
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+}
+
+.home-flag {
+  margin-top: 0.2rem;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.new-flag {
+  color: #ea580c;
+  font-weight: 600;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.8rem;
+}
+
+.price {
+  font-weight: 600;
+}
+
+.stock-cell strong {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.chip-outline {
+  background: transparent;
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.chip-muted {
+  background: #6b7280;
+  color: #fff;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-danger-ghost {
+  color: #d4183d;
+}
+
+.btn-danger-ghost:hover {
+  background: color-mix(in srgb, #d4183d 12%, transparent);
+  color: #d4183d;
+}
+
+.empty-cell {
+  text-align: center;
+  color: var(--muted-foreground);
+  padding: 2rem 0;
+}
+
+@media (max-width: 1200px) {
+  .filters-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .field-search {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .filters-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .field-search {
+    grid-column: auto;
+  }
+
+  .price-view-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .price-toggle {
+    width: 100%;
+  }
+
+  .toggle-btn {
+    flex: 1;
+  }
+}

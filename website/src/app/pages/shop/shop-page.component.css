@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.shop-layout {
+  min-width: 0;
+}
+
+.shop-sidebar {
+  min-width: 16rem;
+}
+
+.shop-content {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.shop-products-grid {
+  min-width: 0;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.shop-product-cell {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.shop-load-more {
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .shop-products-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

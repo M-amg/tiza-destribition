@@ -1,0 +1,57 @@
+:host {
+  display: block;
+}
+
+.tracking-step__line {
+  position: absolute;
+  left: 1.2rem;
+  top: 2.9rem;
+  width: 2px;
+  height: calc(100% - 1rem);
+  background: rgb(226 232 240);
+}
+
+.tracking-step__line--completed {
+  background: rgb(30 64 175);
+}
+
+.tracking-step__icon {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgb(226 232 240);
+  color: rgb(100 116 139);
+}
+
+.tracking-step__icon--completed {
+  background: rgb(30 64 175);
+  color: rgb(255 255 255);
+}
+
+.tracking-step__icon--current {
+  box-shadow: 0 0 0 0.35rem rgb(191 219 254);
+}
+
+.order-item-media {
+  flex-shrink: 0;
+}
+
+.order-item-media__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .track-order-layout {
+    grid-template-columns: 1.8fr 1fr;
+    align-items: start;
+  }
+}

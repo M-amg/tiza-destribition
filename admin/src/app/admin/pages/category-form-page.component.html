@@ -1,0 +1,140 @@
+<section class="form-head">
+  <button type="button" class="btn btn-ghost btn-sm" routerLink="/categories">
+    <lucide-icon [img]="iconBack" [size]="16"></lucide-icon>
+    Back
+  </button>
+  <div>
+    <h1>{{ isEdit ? 'Edit Category' : 'Create Category' }}</h1>
+    <p>{{ isEdit ? 'Update category information.' : 'Add a new product category.' }}</p>
+  </div>
+</section>
+
+<section class="panel empty-state" *ngIf="loadingInitial">
+  <p>Loading category data...</p>
+</section>
+
+<section class="panel empty-state" *ngIf="isEdit && !loadingInitial && !categoryFound">
+  <h2>Category not found</h2>
+  <p>This category id does not exist.</p>
+  <a routerLink="/categories" class="btn btn-primary">Return to categories</a>
+</section>
+
+<form class="category-form" [formGroup]="form" (ngSubmit)="submit()" *ngIf="!loadingInitial && (!isEdit || categoryFound)">
+  <p class="form-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <section class="form-grid">
+    <div class="main-col">
+      <article class="panel section-card">
+        <h2>Basic Information</h2>
+
+        <div class="field-stack">
+          <label for="name">Category Name *</label>
+          <input id="name" type="text" formControlName="name" placeholder="e.g., Electronics, Office Supplies" />
+        </div>
+
+        <div class="field-stack">
+          <label for="description">Description</label>
+          <textarea id="description" rows="4" formControlName="description" placeholder="Describe this category"></textarea>
+        </div>
+
+        <div class="field-stack">
+          <label for="sortOrder">Display Order</label>
+          <input id="sortOrder" type="number" min="0" formControlName="sortOrder" placeholder="0" />
+          <small>Lower numbers appear first on the website and in category lists.</small>
+        </div>
+
+        <div class="field-stack">
+          <label for="parentCategory">Parent Category</label>
+          <select id="parentCategory" formControlName="parentCategory">
+            <option value="none">None (Top Level)</option>
+            <option *ngFor="let option of categoryOptions" [value]="option.id">{{ option.name }}</option>
+          </select>
+          <small>Select a parent category to create a subcategory.</small>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Category Image</h2>
+
+        <div class="field-stack">
+          <div class="image-wrap" *ngIf="imagePreview; else uploadState">
+            <img [src]="imagePreview" [alt]="form.controls.name.value || 'Category preview'" />
+            <button type="button" class="btn btn-danger btn-sm remove-btn" (click)="removeImage()">
+              <lucide-icon [img]="iconRemove" [size]="14"></lucide-icon>
+              Remove
+            </button>
+          </div>
+
+          <ng-template #uploadState>
+            <label class="upload-box" for="categoryImage">
+              <lucide-icon [img]="iconUpload" [size]="42"></lucide-icon>
+              <span>Click to upload category image</span>
+              <small>Recommended: 1200x600px, JPG or PNG</small>
+            </label>
+          </ng-template>
+
+          <input id="categoryImage" type="file" accept="image/*" (change)="onImageUpload($event)" hidden />
+
+          <small>
+            Upload a banner image for this category. This will be displayed on category pages and cards.
+          </small>
+          <small *ngIf="uploadingImage">Uploading image to server...</small>
+          <p class="form-error" *ngIf="imageUploadError">{{ imageUploadError }}</p>
+        </div>
+      </article>
+    </div>
+
+    <aside class="side-col">
+      <article class="panel section-card">
+        <h3>Status</h3>
+
+        <div class="status-row">
+          <div>
+            <strong>Category Active</strong>
+            <small>{{ form.controls.status.value === 'active' ? 'Visible in store' : 'Hidden from store' }}</small>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [attr.aria-checked]="form.controls.status.value === 'active'"
+            [class.on]="form.controls.status.value === 'active'"
+            (click)="toggleStatus(form.controls.status.value !== 'active')"
+          >
+            <span></span>
+          </button>
+        </div>
+      </article>
+
+      <article class="panel preview-card" *ngIf="hasPreview">
+        <h3>Preview</h3>
+
+        <div class="preview-box">
+          <div class="preview-image" *ngIf="imagePreview">
+            <img [src]="imagePreview" [alt]="form.controls.name.value || 'Category image'" />
+            <div class="overlay"></div>
+            <div class="title" *ngIf="form.controls.name.value">{{ form.controls.name.value }}</div>
+          </div>
+
+          <div class="preview-body">
+            <h4 *ngIf="!imagePreview && form.controls.name.value">{{ form.controls.name.value }}</h4>
+            <p *ngIf="form.controls.description.value">{{ form.controls.description.value }}</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel section-card" *ngIf="selectedParentCategoryName">
+        <h3>Category Hierarchy</h3>
+        <p class="muted">This will be a subcategory of:</p>
+        <strong>{{ selectedParentCategoryName }}</strong>
+      </article>
+
+      <article class="panel section-card actions-card">
+        <button type="submit" class="btn btn-primary" [disabled]="submitting || uploadingImage">
+          {{ submitting ? 'Saving...' : (isEdit ? 'Update Category' : 'Create Category') }}
+        </button>
+        <a routerLink="/categories" class="btn btn-secondary">Cancel</a>
+      </article>
+    </aside>
+  </section>
+</form>

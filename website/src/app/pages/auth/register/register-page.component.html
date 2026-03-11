@@ -1,0 +1,223 @@
+<div class="min-h-screen flex">
+  <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-primary/80 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:24px_24px]"></div>
+
+    <div class="relative z-10 flex flex-col items-center justify-center w-full p-12 text-white">
+      <div class="max-w-md">
+        <h1 class="text-4xl font-bold mb-6">{{ 'auth.register.join' | t }}</h1>
+        <p class="text-lg text-white/90 mb-8">{{ 'auth.register.joinSubtitle' | t }}</p>
+
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center"
+              [class.bg-white]="step >= 1" [class.text-primary]="step >= 1" [class.bg-white/20]="step < 1">
+              @if (step > 1) {
+                <lucide-icon name="check" [size]="16"></lucide-icon>
+              } @else {
+                1
+              }
+            </div>
+            <span [class.font-semibold]="step >= 1" [class.text-white/70]="step < 1">{{ 'auth.register.chooseType' | t }}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center"
+              [class.bg-white]="step >= 2" [class.text-primary]="step >= 2" [class.bg-white/20]="step < 2">
+              @if (step > 2) {
+                <lucide-icon name="check" [size]="16"></lucide-icon>
+              } @else {
+                2
+              }
+            </div>
+            <span [class.font-semibold]="step >= 2" [class.text-white/70]="step < 2">{{ 'auth.register.basicInformation' | t }}</span>
+          </div>
+          @if (customerType === 'B2B') {
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center"
+                [class.bg-white]="step >= 3" [class.text-primary]="step >= 3" [class.bg-white/20]="step < 3">3</div>
+              <span [class.font-semibold]="step >= 3" [class.text-white/70]="step < 3">{{ 'auth.register.companyInformation' | t }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-1 flex items-center justify-center p-8 bg-background overflow-y-auto">
+      <div class="w-full max-w-2xl p-8 shadow-lg border rounded-lg bg-card">
+        <div class="flex flex-col items-center mb-8">
+          <a routerLink="/" class="flex items-center gap-2 mb-6">
+            <lucide-icon name="package" [size]="32" class="text-primary"></lucide-icon>
+            <span class="text-xl font-bold text-primary">Tiza Distribution</span>
+          </a>
+        <h1 class="text-3xl font-bold">{{ 'auth.register.createAccount' | t }}</h1>
+        <p class="text-muted-foreground text-center mt-2">
+          @if (step === 1) {
+            {{ 'auth.register.chooseType' | t }}
+          }
+          @if (step === 2) {
+            {{ 'auth.register.basicInformation' | t }}
+          }
+          @if (step === 3) {
+            {{ 'auth.register.companyInformation' | t }}
+          }
+        </p>
+      </div>
+
+      @if (errorMessage) {
+        <p class="mb-4 rounded border border-red-200 bg-red-50 p-3 text-red-700">{{ errorMessage }}</p>
+      }
+
+      @if (helperMessage) {
+        <p class="mb-4 rounded border border-emerald-200 bg-emerald-50 p-3 text-emerald-700">{{ helperMessage }}</p>
+      }
+
+      @if (step === 1) {
+        <div class="space-y-6">
+          <div
+            class="group relative cursor-pointer rounded-xl border-2 p-6 transition-all"
+            [class.border-orange-500]="customerType === 'B2C'"
+            [class.bg-orange-50]="customerType === 'B2C'"
+            [class.border-border]="customerType !== 'B2C'"
+            (click)="setCustomerType('B2C')"
+          >
+            <div class="flex items-start gap-4">
+              <div class="w-14 h-14 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center">
+                <lucide-icon name="user" [size]="28"></lucide-icon>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-bold text-2xl mb-1">{{ 'auth.register.personalAccount' | t }}</h3>
+                <p class="text-muted-foreground mb-3">{{ 'auth.register.personalAccountText' | t }}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                  <p>{{ 'auth.register.easyCheckout' | t }}</p>
+                  <p>{{ 'auth.register.orderTracking' | t }}</p>
+                  <p>{{ 'auth.register.securePayments' | t }}</p>
+                  <p>{{ 'auth.register.support247' | t }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="group relative cursor-pointer rounded-xl border-2 p-6 transition-all"
+            [class.border-primary]="customerType === 'B2B'"
+            [class.bg-blue-50]="customerType === 'B2B'"
+            [class.border-border]="customerType !== 'B2B'"
+            (click)="setCustomerType('B2B')"
+          >
+            <div class="flex items-start gap-4">
+              <div class="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <lucide-icon name="building-2" [size]="28"></lucide-icon>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-bold text-2xl mb-1">{{ 'auth.register.businessAccount' | t }}</h3>
+                <p class="text-muted-foreground mb-3">{{ 'auth.register.businessAccountText' | t }}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                  <p>{{ 'auth.register.wholesaleDiscounts' | t }}</p>
+                  <p>{{ 'auth.register.bulkOrdering' | t }}</p>
+                  <p>{{ 'auth.register.invoiceManagement' | t }}</p>
+                  <p>{{ 'auth.register.prioritySupport' | t }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="w-full border rounded-md px-4 py-2 bg-primary text-white" [disabled]="!customerType" (click)="nextFromStepOne()">
+            {{ 'auth.register.continue' | t }}
+          </button>
+
+          <div class="my-6 relative">
+            <div class="absolute inset-0 flex items-center"><div class="w-full border-t"></div></div>
+            <div class="relative flex justify-center text-xs uppercase">
+              <span class="bg-background px-2 text-muted-foreground">{{ 'auth.register.orRegisterWith' | t }}</span>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <button type="button" class="w-full border rounded-md px-4 py-2" [disabled]="loading" (click)="socialRegister('Google')">
+              {{ 'auth.login.continueWithGoogle' | t }}
+            </button>
+            <button type="button" class="w-full border rounded-md px-4 py-2" [disabled]="loading" (click)="socialRegister('Facebook')">
+              {{ 'auth.login.continueWithFacebook' | t }}
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (step === 2) {
+        <form (ngSubmit)="nextFromStepTwo()" class="space-y-4">
+          <div>
+            <label class="block mb-1">{{ 'common.fullName' | t }} *</label>
+            <input [(ngModel)]="form.fullName" name="fullName" placeholder="John Doe" required [disabled]="loading" />
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'checkout.emailAddress' | t }} *</label>
+            <input type="email" [(ngModel)]="form.email" name="email" [placeholder]="'auth.login.emailPlaceholder' | t" required [disabled]="loading" />
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'checkout.phoneNumber' | t }} *</label>
+            <input type="tel" [(ngModel)]="form.phone" name="phone" [placeholder]="'auth.register.phonePlaceholder' | t" required [disabled]="loading" />
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'common.password' | t }} *</label>
+            <input type="password" [(ngModel)]="form.password" name="password" [placeholder]="'auth.register.passwordPlaceholder' | t" required [disabled]="loading" minlength="8" />
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'common.confirmPassword' | t }} *</label>
+            <input type="password" [(ngModel)]="form.confirmPassword" name="confirmPassword" [placeholder]="'auth.register.confirmPasswordPlaceholder' | t" required [disabled]="loading" minlength="8" />
+          </div>
+
+          <div class="flex gap-3 pt-4">
+            <button type="button" class="flex-1 border rounded-md px-4 py-2" [disabled]="loading" (click)="backToStepOne()">{{ 'common.previous' | t }}</button>
+            <button type="submit" class="flex-1 border rounded-md px-4 py-2 bg-primary text-white" [disabled]="loading">
+              @if (customerType === 'B2B') {
+                {{ 'auth.register.continue' | t }}
+              } @else {
+                {{ loading ? ('auth.register.creating' | t) : ('auth.register.createAccount' | t) }}
+              }
+            </button>
+          </div>
+        </form>
+      }
+
+      @if (step === 3 && customerType === 'B2B') {
+        <form (ngSubmit)="submit()" class="space-y-4">
+          <div>
+            <label class="block mb-1">{{ 'auth.register.companyName' | t }} *</label>
+            <input [(ngModel)]="form.companyName" name="companyName" [placeholder]="'auth.register.companyNamePlaceholder' | t" required [disabled]="loading" />
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'auth.register.taxId' | t }} *</label>
+            <input [(ngModel)]="form.taxId" name="taxId" [placeholder]="'auth.register.taxIdPlaceholder' | t" required [disabled]="loading" />
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'auth.register.companyAddress' | t }} *</label>
+            <input [(ngModel)]="form.address" name="address" [placeholder]="'auth.register.companyAddressPlaceholder' | t" required [disabled]="loading" />
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'common.city' | t }} *</label>
+            <input [(ngModel)]="form.city" name="city" [placeholder]="'auth.register.cityPlaceholder' | t" required [disabled]="loading" />
+          </div>
+
+          <div class="flex gap-3 pt-4">
+            <button type="button" class="flex-1 border rounded-md px-4 py-2" [disabled]="loading" (click)="backToStepTwo()">{{ 'common.previous' | t }}</button>
+            <button type="submit" class="flex-1 border rounded-md px-4 py-2 bg-primary text-white" [disabled]="loading">
+              {{ loading ? ('auth.register.creating' | t) : ('auth.register.createAccount' | t) }}
+            </button>
+          </div>
+        </form>
+      }
+
+      <div class="mt-6 text-center text-sm">
+        <span class="text-muted-foreground">{{ 'auth.register.alreadyHaveAccount' | t }} </span>
+        <a routerLink="/login" class="text-primary hover:underline font-semibold">{{ 'auth.register.signIn' | t }}</a>
+      </div>
+    </div>
+  </div>
+</div>

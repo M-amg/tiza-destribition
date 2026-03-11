@@ -1,0 +1,74 @@
+<div class="admin-shell">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="left-side">
+        <button class="btn btn-ghost btn-sm btn-icon mobile-only" type="button" (click)="toggleSidebar()">
+          <lucide-icon [img]="sidebarOpen() ? iconClose : iconMenu" [size]="22"></lucide-icon>
+        </button>
+
+        <a class="brand" routerLink="/">
+          <span class="brand-mark">TD</span>
+          <span class="brand-text">
+            <strong>Tiza Distribution</strong>
+            <small>Admin Panel</small>
+          </span>
+        </a>
+      </div>
+
+      <div class="search-slot">
+        <label class="search-box" aria-label="search">
+          <lucide-icon [img]="iconSearch" [size]="16" class="search-icon"></lucide-icon>
+          <input type="search" placeholder="Search products, orders, customers..." />
+        </label>
+      </div>
+
+      <div class="right-side">
+        <button class="btn btn-ghost btn-sm btn-icon notif-btn" type="button" aria-label="Notifications">
+          <lucide-icon [img]="iconBell" [size]="20"></lucide-icon>
+          <span class="notif-count">3</span>
+        </button>
+
+        <button class="btn btn-ghost btn-sm profile-btn" type="button">
+          <span class="avatar">{{ profileInitial }}</span>
+          <span class="identity">
+            <strong>{{ profileName }}</strong>
+            <small>{{ profileRole }}</small>
+          </span>
+        </button>
+
+        <button class="btn btn-ghost btn-sm btn-icon" type="button" aria-label="Logout" (click)="logout()">
+          <lucide-icon [img]="iconLogout" [size]="18"></lucide-icon>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" [class.open]="sidebarOpen()">
+      <nav>
+        <a
+          *ngFor="let item of navItems; trackBy: trackByPath"
+          [routerLink]="item.fullPath"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="item.exact ? exactActiveOptions : subsetActiveOptions"
+          (click)="closeSidebar()"
+        >
+          <lucide-icon [img]="item.iconData" [size]="20" class="nav-icon"></lucide-icon>
+          <span>{{ item.label }}</span>
+        </a>
+      </nav>
+    </aside>
+
+    <button
+      *ngIf="sidebarOpen()"
+      class="overlay"
+      type="button"
+      aria-label="Close sidebar"
+      (click)="closeSidebar()"
+    ></button>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

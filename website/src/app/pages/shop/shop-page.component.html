@@ -1,0 +1,160 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">{{ 'shop.title' | t }}</h1>
+    <p class="text-muted-foreground">{{ 'shop.showingProducts' | t: { count: totalProducts } }}</p>
+  </div>
+
+  <div class="shop-layout flex flex-col lg:flex-row gap-8">
+    <aside class="shop-sidebar hidden lg:block w-64 flex-shrink-0">
+      <div class="sticky top-24 bg-card border rounded-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold">{{ 'common.filters' | t }}</h2>
+        </div>
+
+        <div class="space-y-6">
+          <div>
+            <h3 class="font-semibold mb-3">{{ 'common.categories' | t }}</h3>
+            <div class="space-y-2">
+              @for (category of categories; track category.id) {
+                <label class="flex items-center space-x-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    [checked]="selectedCategories.includes(category.id)"
+                    (change)="toggleCategory(category.id)"
+                  />
+                  <span>
+                    {{ category.name }}
+                    <span class="text-muted-foreground ml-1">({{ categoryLabelCount(category.id) }})</span>
+                  </span>
+                </label>
+              }
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-semibold mb-3">
+              {{ 'shop.priceRange' | t: { min: priceRange[0], max: priceRange[1] } }}
+            </h3>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="number" min="0" [(ngModel)]="priceRange[0]" (ngModelChange)="fetchFirstPage()" />
+              <input type="number" min="0" [(ngModel)]="priceRange[1]" (ngModelChange)="fetchFirstPage()" />
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-semibold mb-3">{{ 'common.brands' | t }}</h3>
+            <div class="space-y-2 max-h-48 overflow-y-auto">
+              @for (brand of brands; track brand) {
+                <label class="flex items-center space-x-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    [checked]="selectedBrands.includes(brand)"
+                    (change)="toggleBrand(brand)"
+                  />
+                  <span>{{ brand }}</span>
+                </label>
+              }
+            </div>
+          </div>
+
+          <button type="button" (click)="clearFilters()" class="w-full border rounded-md px-3 py-2">
+            {{ 'common.clearAllFilters' | t }}
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="shop-content flex-1">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <button type="button" class="lg:hidden border rounded-md px-4 py-2" (click)="mobileFiltersOpen = !mobileFiltersOpen">
+          <lucide-icon name="filter" [size]="16" class="inline mr-2"></lucide-icon>
+          {{ 'common.filters' | t }}
+        </button>
+
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <label class="whitespace-nowrap">{{ 'common.sortBy' | t }}</label>
+          <select [(ngModel)]="sortBy" (ngModelChange)="fetchFirstPage()" name="sortBy" class="w-full sm:w-48">
+            <option value="featured">{{ 'common.featured' | t }}</option>
+            <option value="priceLow">{{ 'common.priceLow' | t }}</option>
+            <option value="priceHigh">{{ 'common.priceHigh' | t }}</option>
+            <option value="newest">{{ 'common.newest' | t }}</option>
+            <option value="rating">{{ 'common.bestRating' | t }}</option>
+            <option value="stockHigh">{{ 'common.stockHigh' | t }}</option>
+            <option value="stockLow">{{ 'common.stockLow' | t }}</option>
+          </select>
+        </div>
+      </div>
+
+      @if (mobileFiltersOpen) {
+        <div class="lg:hidden mb-6 bg-card border rounded-lg p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold">{{ 'common.filters' | t }}</h2>
+            <button type="button" (click)="mobileFiltersOpen = false" class="text-sm">{{ 'common.close' | t }}</button>
+          </div>
+
+          <div class="space-y-6">
+            <div>
+              <h3 class="font-semibold mb-3">{{ 'common.categories' | t }}</h3>
+              <div class="space-y-2">
+                @for (category of categories; track category.id) {
+                  <label class="flex items-center space-x-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      [checked]="selectedCategories.includes(category.id)"
+                      (change)="toggleCategory(category.id)"
+                    />
+                    <span>{{ category.name }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-semibold mb-3">{{ 'common.brands' | t }}</h3>
+              <div class="space-y-2 max-h-48 overflow-y-auto">
+                @for (brand of brands; track brand) {
+                  <label class="flex items-center space-x-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      [checked]="selectedBrands.includes(brand)"
+                      (change)="toggleBrand(brand)"
+                    />
+                    <span>{{ brand }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+
+            <button type="button" (click)="clearFilters()" class="w-full border rounded-md px-3 py-2">
+              <lucide-icon name="x" [size]="14" class="inline mr-2"></lucide-icon>
+              {{ 'common.clearAllFilters' | t }}
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (loading) {
+        <p class="text-muted-foreground">{{ 'common.loadingProducts' | t }}</p>
+      } @else if (products.length > 0) {
+        <div class="shop-products-grid grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          @for (product of products; track product.id) {
+            <div class="shop-product-cell min-w-0">
+              <app-product-tile [product]="product"></app-product-tile>
+            </div>
+          }
+        </div>
+
+        @if (hasMoreProducts) {
+          <div #loadMoreSentinel class="shop-load-more mt-8 py-4 text-center text-sm text-muted-foreground">
+            {{ 'common.loadingProducts' | t }}
+          </div>
+        }
+      } @else {
+        <div class="text-center py-12">
+          <p class="text-lg text-muted-foreground mb-4">{{ 'shop.noProductsFound' | t }}</p>
+          <button type="button" (click)="clearFilters()" class="border rounded-md px-4 py-2">{{ 'common.clearAllFilters' | t }}</button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

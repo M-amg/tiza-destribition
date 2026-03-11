@@ -1,0 +1,74 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-01-create-user-notifications
+      author: codex
+      changes:
+        - createTable:
+            tableName: user_notifications
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: UUID
+              - column:
+                  name: order_number
+                  type: VARCHAR(40)
+              - column:
+                  name: order_status
+                  type: VARCHAR(30)
+              - column:
+                  name: read_at
+                  type: TIMESTAMP
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: user_notifications
+            baseColumnNames: user_id
+            constraintName: fk_user_notifications_user
+            referencedTableName: users
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: user_notifications
+            baseColumnNames: order_id
+            constraintName: fk_user_notifications_order
+            referencedTableName: orders
+            referencedColumnNames: id
+        - createIndex:
+            tableName: user_notifications
+            indexName: idx_user_notifications_user_created_at
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: created_at
+        - createIndex:
+            tableName: user_notifications
+            indexName: idx_user_notifications_user_read_at
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: read_at

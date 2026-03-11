@@ -1,0 +1,289 @@
+.details-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.form-error {
+  margin: 0 0 0.75rem;
+  color: #b91c1c;
+  font-size: 0.85rem;
+}
+
+.head-left {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.head-left h1 {
+  margin: 0;
+  font-size: 1.85rem;
+  font-weight: 700;
+}
+
+.head-left p {
+  margin: 0.2rem 0 0;
+  color: var(--muted-foreground);
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+}
+
+.main-col,
+.side-col {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.section-card {
+  padding: 1rem;
+}
+
+.section-card h2 {
+  margin-bottom: 0.85rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.info-grid small {
+  display: block;
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+  margin-bottom: 0.2rem;
+}
+
+.info-grid strong {
+  display: block;
+}
+
+.inline-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.customer-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding-bottom: 0.8rem;
+  margin-bottom: 0.8rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.customer-head > span {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--primary) 15%, white);
+  color: var(--primary);
+}
+
+.customer-head strong {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.contact-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.contact-item:hover {
+  text-decoration: underline;
+}
+
+.contact-item.align-start {
+  align-items: flex-start;
+}
+
+.contact-item small {
+  display: block;
+  color: var(--muted-foreground);
+  margin-top: 0.2rem;
+  line-height: 1.35;
+}
+
+.item-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.item-cell img {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.45rem;
+  object-fit: cover;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.muted {
+  color: var(--muted-foreground);
+}
+
+.coupon-card {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.coupon-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  color: #166534;
+}
+
+.coupon-head h3 {
+  margin: 0 0 0.15rem;
+  font-size: 0.98rem;
+}
+
+.coupon-head p {
+  margin: 0;
+  font-size: 0.84rem;
+}
+
+.summary-list {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+}
+
+.summary-list div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.summary-list dt {
+  color: var(--muted-foreground);
+}
+
+.summary-list dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.discount-row dd,
+.discount-row dt {
+  color: #15803d;
+}
+
+.total-row {
+  margin-top: 0.4rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--border);
+}
+
+.total-row dt,
+.total-row dd {
+  color: var(--primary);
+  font-size: 1.03rem;
+  font-weight: 700;
+}
+
+.action-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.action-list .btn {
+  width: 100%;
+}
+
+.timeline {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.timeline-item .dot {
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+  background: var(--card);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.timeline-item.done .dot {
+  border-color: #16a34a;
+  background: #16a34a;
+  color: #fff;
+}
+
+.timeline-item.cancelled .dot {
+  border-color: #dc2626;
+  background: #dc2626;
+  color: #fff;
+}
+
+.timeline-item strong {
+  display: block;
+  font-size: 0.88rem;
+}
+
+.timeline-item small {
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 1200px) {
+  .details-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .side-col {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .head-left {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .info-grid,
+  .side-col {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

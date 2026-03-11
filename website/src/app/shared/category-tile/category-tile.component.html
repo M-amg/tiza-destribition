@@ -1,0 +1,30 @@
+<a [routerLink]="['/shop']" [queryParams]="{ category: category().id }" class="group block">
+  <div class="bg-card rounded-lg border overflow-hidden hover:shadow-lg transition-all duration-300">
+    <div class="relative aspect-video overflow-hidden bg-gray-100">
+      <img
+        [src]="category().imageUrl || 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&h=400&fit=crop'"
+        [alt]="category().name"
+        class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+      <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+        <h3 class="text-xl font-bold mb-1">{{ category().name }}</h3>
+        <p class="text-sm text-white/90">
+          @if (productCount() !== null) {
+            {{ 'category.productsCount' | t: { count: productCount()! } }}
+          } @else {
+            {{ 'category.browseProducts' | t }}
+          }
+        </p>
+      </div>
+    </div>
+    <div class="p-4 flex items-center justify-between gap-4">
+      <span class="text-sm text-muted-foreground">{{ category().description }}</span>
+      <lucide-icon
+        name="arrow-right"
+        [size]="16"
+        class="text-primary group-hover:translate-x-1 transition-transform"
+      ></lucide-icon>
+    </div>
+  </div>
+</a>

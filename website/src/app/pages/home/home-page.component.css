@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+.home-hero {
+  box-shadow: 0 28px 60px rgb(15 23 42 / 0.18);
+}
+
+.home-category-circle {
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.45);
+}

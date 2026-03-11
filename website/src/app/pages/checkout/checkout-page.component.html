@@ -1,0 +1,277 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-8">{{ 'checkout.title' | t }}</h1>
+
+  @if (loading) {
+    <p>{{ 'common.loadingCheckout' | t }}</p>
+  } @else if (!hasCartItems) {
+    <div class="text-center py-16">
+      <h2 class="text-2xl font-bold mb-4">{{ 'checkout.emptyTitle' | t }}</h2>
+      <a routerLink="/shop" class="border rounded-md px-4 py-2">{{ 'checkout.goToShop' | t }}</a>
+    </div>
+  } @else if (checkoutResult) {
+    <div class="max-w-xl mx-auto border rounded-lg p-6 text-center bg-card">
+      <h2 class="text-2xl font-bold mb-2">{{ 'checkout.successTitle' | t }}</h2>
+      <p class="mb-2">{{ 'common.orderNumber' | t }}: <strong>{{ checkoutResult.orderNumber }}</strong></p>
+      <p class="mb-6">{{ 'common.invoiceNumber' | t }}: <strong>{{ checkoutResult.invoiceNumber }}</strong></p>
+      @if (showAccountCreationPanel()) {
+        <div class="mb-6 rounded-lg border bg-muted/40 p-4 text-left">
+          <h3 class="font-semibold mb-2">{{ 'checkout.createAccountAfterCheckout' | t }}</h3>
+          @if (creatingAccount) {
+            <p class="text-sm text-muted-foreground">{{ 'checkout.creatingAccount' | t }}</p>
+          } @else if (showAccountCreatedMessage()) {
+            <p class="text-sm text-green-700">{{ 'checkout.accountReady' | t }}</p>
+          } @else if (existingAccountWarning()) {
+            <p class="text-sm text-amber-700 mb-4">{{ 'checkout.accountExists' | t }}</p>
+            <button type="button" class="border rounded-md px-4 py-2 bg-primary text-white" (click)="signInInstead()">
+              {{ 'common.login' | t }}
+            </button>
+          } @else {
+            <p class="text-sm text-muted-foreground mb-4">{{ 'checkout.saveOrderAccount' | t }}</p>
+            @if (accountErrorMessage) {
+              <p class="mb-4 rounded border border-red-200 bg-red-50 p-3 text-red-700">{{ accountErrorMessage }}</p>
+            }
+            @if (canRetryAccountCreation()) {
+              <div class="flex gap-3">
+                <button
+                  type="button"
+                  class="border rounded-md px-4 py-2 bg-primary text-white"
+                  (click)="createAccountAfterCheckout()"
+                >
+                  {{ 'checkout.tryAgain' | t }}
+                </button>
+                <button type="button" class="border rounded-md px-4 py-2" (click)="signInInstead()">
+                  {{ 'checkout.signInInstead' | t }}
+                </button>
+              </div>
+            }
+          }
+        </div>
+      }
+      <button type="button" class="border rounded-md px-4 py-2 bg-primary text-white" (click)="goToDashboardOrders()">
+        {{ isAuthenticated() ? ('common.dashboardOrders' | t) : ('common.continueShopping' | t) }}
+      </button>
+    </div>
+  } @else if (cart) {
+    <div class="mb-8">
+      <div class="flex items-center justify-between max-w-3xl mx-auto">
+        @for (step of steps(); track step.number; let i = $index) {
+          <div class="flex items-center flex-1">
+            <div class="flex flex-col items-center">
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center font-bold"
+                [class.bg-primary]="currentStep >= step.number"
+                [class.text-white]="currentStep >= step.number"
+                [class.bg-gray-200]="currentStep < step.number"
+                [class.text-gray-500]="currentStep < step.number"
+              >
+                @if (currentStep > step.number) {
+                  <lucide-icon name="check" [size]="16"></lucide-icon>
+                } @else {
+                  {{ step.number }}
+                }
+              </div>
+              <span class="text-sm mt-2 hidden sm:block">{{ step.title }}</span>
+            </div>
+            @if (i < steps().length - 1) {
+              <div class="flex-1 h-1 mx-2" [class.bg-primary]="currentStep > step.number" [class.bg-gray-200]="currentStep <= step.number"></div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (errorMessage) {
+      <p class="mb-4 rounded border border-red-200 bg-red-50 p-3 text-red-700">{{ errorMessage }}</p>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2">
+        <form (ngSubmit)="submitOrNext()" class="border rounded-lg p-6 bg-card">
+          @if (currentStep === 1) {
+            <div class="space-y-4">
+              <h2 class="text-xl font-bold mb-4">{{ 'checkout.customerInformation' | t }}</h2>
+              <div>
+                <label class="block mb-1">{{ 'common.fullName' | t }} *</label>
+                <input [(ngModel)]="form.recipientName" name="recipientName" required />
+              </div>
+              <div>
+                <label class="block mb-1">{{ 'checkout.phoneNumber' | t }} *</label>
+                <input [(ngModel)]="form.phone" name="phone" required />
+              </div>
+              <div>
+                <label class="block mb-1">{{ 'checkout.emailAddress' | t }} *</label>
+                <input type="email" [(ngModel)]="form.email" name="email" required />
+              </div>
+
+              @if (!isAuthenticated()) {
+                <label class="flex items-center gap-3 rounded-lg border p-4">
+                  <input type="checkbox" [(ngModel)]="createAccountAfterOrder" name="createAccountAfterOrder" (ngModelChange)="onCreateAccountToggle()" />
+                  <div>
+                    <div class="font-medium">{{ 'checkout.createAccountOption' | t }}</div>
+                    <p class="text-sm text-muted-foreground">{{ 'checkout.createAccountText' | t }}</p>
+                  </div>
+                </label>
+
+                @if (createAccountAfterOrder) {
+                  <div>
+                    <label class="block mb-1">{{ 'common.password' | t }} *</label>
+                    <input type="password" [(ngModel)]="accountPassword" name="accountPassword" minlength="8" required />
+                  </div>
+                  <div>
+                    <label class="block mb-1">{{ 'common.confirmPassword' | t }} *</label>
+                    <input type="password" [(ngModel)]="accountConfirmPassword" name="accountConfirmPassword" minlength="8" required />
+                  </div>
+                  @if (accountErrorMessage) {
+                    <p class="rounded border border-red-200 bg-red-50 p-3 text-red-700">{{ accountErrorMessage }}</p>
+                  }
+                }
+              }
+            </div>
+          }
+
+          @if (currentStep === 2) {
+            <div class="space-y-4">
+              <h2 class="text-xl font-bold mb-4">{{ 'checkout.deliveryInformationMorocco' | t }}</h2>
+
+              @if (addresses.length > 0) {
+                <div>
+                  <label class="block mb-1">{{ 'checkout.savedAddresses' | t }}</label>
+                  <select [ngModel]="selectedAddressId" name="selectedAddressId" (ngModelChange)="onAddressChange($event)">
+                    @for (address of addresses; track address.id) {
+                      <option [value]="address.id">{{ address.recipientName }} - {{ address.addressLine1 }}, {{ address.city }}</option>
+                    }
+                  </select>
+                </div>
+              }
+
+              <div>
+                <label class="block mb-1">{{ 'checkout.deliveryAddress' | t }} *</label>
+                <input [(ngModel)]="form.addressLine1" name="addressLine1" [placeholder]="'checkout.deliveryAddressPlaceholder' | t" required />
+              </div>
+              <div>
+                <label class="block mb-1">{{ 'common.city' | t }} *</label>
+                <input [(ngModel)]="form.city" name="city" [placeholder]="'checkout.cityPlaceholder' | t" required />
+              </div>
+            </div>
+          }
+
+          @if (currentStep === 3) {
+            <div class="space-y-4">
+              <h2 class="text-xl font-bold mb-4">{{ 'checkout.paymentMethod' | t }}</h2>
+
+              @for (method of paymentMethods(); track method.value) {
+                <label class="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer">
+                  <input type="radio" name="paymentMethod" [(ngModel)]="form.paymentMethod" [value]="method.value" />
+                  <div class="flex-1">
+                    <div class="font-medium">{{ method.label }}</div>
+                    <p class="text-sm text-muted-foreground">{{ method.description }}</p>
+                  </div>
+                </label>
+              }
+
+              @if (form.paymentMethod === 'CARD') {
+                <div class="space-y-4 mt-4 p-4 border rounded-lg bg-muted/50">
+                  <p class="text-sm text-muted-foreground">{{ 'checkout.cardGateway' | t }}</p>
+                </div>
+              }
+            </div>
+          }
+
+          @if (currentStep === 4) {
+            <div class="space-y-6">
+              <h2 class="text-xl font-bold mb-4">{{ 'checkout.reviewYourOrder' | t }}</h2>
+
+              <div>
+                <h3 class="font-semibold mb-2">{{ 'checkout.customerInformation' | t }}</h3>
+                <div class="text-sm text-muted-foreground space-y-1">
+                  <p>{{ 'common.fullName' | t }}: {{ form.recipientName }}</p>
+                  <p>{{ 'common.phone' | t }}: {{ form.phone }}</p>
+                  <p>{{ 'common.email' | t }}: {{ form.email }}</p>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="font-semibold mb-2">{{ 'checkout.deliveryAddressTitle' | t }}</h3>
+                <div class="text-sm text-muted-foreground">
+                  <p>{{ form.addressLine1 }}</p>
+                  <p>{{ form.city }}</p>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="font-semibold mb-2">{{ 'checkout.paymentMethod' | t }}</h3>
+                <p class="text-sm text-muted-foreground">
+                  {{ paymentMethodLabel(form.paymentMethod) }}
+                </p>
+              </div>
+
+              <div>
+                <h3 class="font-semibold mb-2">{{ 'checkout.orderItems' | t }}</h3>
+                <div class="space-y-2">
+                  @for (item of cart.items; track item.id) {
+                    <div class="flex justify-between text-sm">
+                      <span>{{ item.productName }} x {{ item.quantity }}</span>
+                      <span class="font-semibold">{{ item.lineTotal | number: '1.2-2' }} DH</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+
+          <div class="flex justify-between mt-8 pt-6 border-t">
+            @if (currentStep > 1) {
+              <button type="button" class="border rounded-md px-4 py-2" (click)="prevStep()">{{ 'common.previous' | t }}</button>
+            }
+
+            <button type="submit" class="ml-auto border rounded-md px-4 py-2 bg-primary text-white" [disabled]="submitting">
+              @if (currentStep < 4) {
+                {{ 'common.next' | t }}
+              } @else {
+                {{ submitting ? ('checkout.placingOrder' | t) : ('checkout.placeOrder' | t) }}
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <div class="border rounded-lg p-6 bg-card sticky top-24">
+          <h2 class="text-xl font-bold mb-4">{{ 'cart.orderSummary' | t }}</h2>
+
+          <div class="space-y-2 mb-4">
+            @for (item of cart.items; track item.id) {
+              <div class="flex justify-between text-sm">
+                <span class="text-muted-foreground">{{ item.productName }} x {{ item.quantity }}</span>
+                <span>{{ item.lineTotal | number: '1.2-2' }} DH</span>
+              </div>
+            }
+          </div>
+
+          <div class="border-t pt-4 space-y-3">
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">{{ 'common.subtotal' | t }}</span>
+              <span class="font-semibold">{{ cart.subtotal | number: '1.2-2' }} DH</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">{{ 'common.shipping' | t }}</span>
+              <span class="font-semibold">{{ cart.shippingAmount === 0 ? ('common.free' | t) : ((cart.shippingAmount | number: '1.2-2') + ' DH') }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">{{ 'common.tax' | t }}</span>
+              <span class="font-semibold">{{ cart.taxAmount | number: '1.2-2' }} DH</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">{{ 'common.discount' | t }}</span>
+              <span class="font-semibold">- {{ cart.discountAmount | number: '1.2-2' }} DH</span>
+            </div>
+            <div class="border-t pt-3 flex justify-between">
+              <span class="text-lg font-bold">{{ 'common.total' | t }}</span>
+              <span class="text-lg font-bold text-primary">{{ cart.totalAmount | number: '1.2-2' }} DH</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

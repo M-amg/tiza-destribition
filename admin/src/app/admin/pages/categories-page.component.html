@@ -1,0 +1,94 @@
+<section class="page-head categories-head">
+  <div>
+    <h1>Categories</h1>
+    <p>Organize your products with categories.</p>
+  </div>
+  <a routerLink="/categories/new" class="btn btn-primary">
+    <lucide-icon [img]="iconPlus" [size]="16"></lucide-icon>
+    Add Category
+  </a>
+</section>
+
+<section class="stats-grid">
+  <article class="panel stat-card">
+    <small>Total Categories</small>
+    <strong>{{ categories.length }}</strong>
+  </article>
+  <article class="panel stat-card">
+    <small>Total Products</small>
+    <strong class="primary">{{ totalProducts }}</strong>
+  </article>
+  <article class="panel stat-card">
+    <small>Avg Products / Category</small>
+    <strong class="accent">{{ averageProductsPerCategory }}</strong>
+  </article>
+</section>
+
+<section class="panel empty-state" *ngIf="loading">
+  <p>Loading categories...</p>
+</section>
+
+<section class="panel empty-state" *ngIf="!loading && errorMessage">
+  <p class="form-error">{{ errorMessage }}</p>
+</section>
+
+<section class="cards-grid" *ngIf="!loading && !errorMessage && categories.length">
+  <article class="panel category-card" *ngFor="let category of categories; let index = index; trackBy: trackById">
+    <div class="media">
+      <img [src]="imageFor(category)" [alt]="category.name" />
+      <div class="overlay"></div>
+      <div class="media-content">
+        <h2>{{ category.name }}</h2>
+        <span class="chip glass-chip">{{ category.productCount ?? 0 }} products</span>
+      </div>
+    </div>
+
+    <div class="body">
+      <p>{{ category.description }}</p>
+      <div class="order-row">
+        <span class="chip chip-outline">Order {{ category.sortOrder ?? 0 }}</span>
+        <div class="actions">
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm btn-icon"
+            [disabled]="!canMoveUp(index)"
+            (click)="moveCategory(index, 'up')"
+            aria-label="Move category up"
+          >
+            <lucide-icon [img]="iconArrowUp" [size]="16"></lucide-icon>
+          </button>
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm btn-icon"
+            [disabled]="!canMoveDown(index)"
+            (click)="moveCategory(index, 'down')"
+            aria-label="Move category down"
+          >
+            <lucide-icon [img]="iconArrowDown" [size]="16"></lucide-icon>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <span class="chip chip-outline">{{ statusLabel(category) }}</span>
+        <div class="actions">
+          <a [routerLink]="['/categories', category.id, 'edit']" class="btn btn-ghost btn-sm btn-icon" aria-label="Edit category">
+            <lucide-icon [img]="iconEdit" [size]="16"></lucide-icon>
+          </a>
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm btn-icon btn-danger-ghost"
+            [disabled]="deletingId === category.id"
+            (click)="deleteCategory(category)"
+            aria-label="Delete category"
+          >
+            <lucide-icon [img]="iconTrash" [size]="16"></lucide-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<section class="panel empty-state" *ngIf="!loading && !errorMessage && !categories.length">
+  <p>No categories found.</p>
+</section>

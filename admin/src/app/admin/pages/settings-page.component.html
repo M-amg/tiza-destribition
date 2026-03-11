@@ -1,0 +1,479 @@
+<section class="settings-page" [formGroup]="form">
+  <header class="page-head settings-head">
+    <div>
+      <h1>Settings</h1>
+      <p>Manage your store settings and configurations</p>
+    </div>
+  </header>
+
+  <p class="status-note status-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="status-note status-muted" *ngIf="loading">Loading settings...</p>
+
+  <nav class="tabs-list" aria-label="Settings tabs">
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'general'" (click)="setTab('general')">General</button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'homepage'" (click)="setTab('homepage')">Homepage</button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'delivery'" (click)="setTab('delivery')">Delivery</button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'payment'" (click)="setTab('payment')">Payment</button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'notifications'" (click)="setTab('notifications')">Notifications</button>
+  </nav>
+
+  <ng-container *ngIf="activeTab === 'general'">
+    <article class="panel section-card">
+      <h3>Company Information</h3>
+
+      <div class="stack">
+        <div class="grid-two">
+          <label class="field-stack" for="company-name">
+            <span>Company Name</span>
+            <input id="company-name" type="text" formControlName="companyName" />
+          </label>
+
+          <label class="field-stack" for="company-email">
+            <span>Email</span>
+            <input id="company-email" type="email" formControlName="companyEmail" />
+          </label>
+        </div>
+
+        <div class="grid-two">
+          <label class="field-stack" for="company-phone">
+            <span>Phone</span>
+            <input id="company-phone" type="text" formControlName="companyPhone" />
+          </label>
+
+          <label class="field-stack" for="company-website">
+            <span>Website</span>
+            <input id="company-website" type="text" formControlName="companyWebsite" />
+          </label>
+        </div>
+
+        <label class="field-stack" for="company-address">
+          <span>Business Address</span>
+          <textarea id="company-address" rows="3" formControlName="companyAddress"></textarea>
+        </label>
+
+        <div class="field-stack">
+          <span>Company Logo</span>
+          <div class="logo-row">
+            <div class="logo-box">
+              <ng-container *ngIf="form.controls.companyLogoUrl.value; else logoInitials">
+                <img [src]="form.controls.companyLogoUrl.value" [alt]="form.controls.companyName.value" />
+              </ng-container>
+              <ng-template #logoInitials>
+                <strong>{{ (form.controls.companyName.value || 'TD').slice(0, 2).toUpperCase() }}</strong>
+              </ng-template>
+            </div>
+            <div class="field-stack" style="flex: 1;">
+              <span>Logo URL</span>
+              <input type="text" formControlName="companyLogoUrl" placeholder="https://example.com/logo.png" />
+            </div>
+          </div>
+          <small>Recommended size: 200x200px</small>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel section-card">
+      <h3>Store Settings</h3>
+
+      <div class="setting-list">
+        <div class="setting-row">
+          <div>
+            <p class="setting-title">Store Status</p>
+            <p class="setting-desc">Enable or disable the entire store</p>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.on]="form.controls.storeStatus.value"
+            [attr.aria-checked]="form.controls.storeStatus.value"
+            (click)="toggleControl('storeStatus')"
+          >
+            <span></span>
+          </button>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <p class="setting-title">Maintenance Mode</p>
+            <p class="setting-desc">Show maintenance page to customers</p>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.on]="form.controls.maintenanceMode.value"
+            [attr.aria-checked]="form.controls.maintenanceMode.value"
+            (click)="toggleControl('maintenanceMode')"
+          >
+            <span></span>
+          </button>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <p class="setting-title">Allow B2B Registration</p>
+            <p class="setting-desc">Let customers register as B2B accounts</p>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.on]="form.controls.allowB2BRegistration.value"
+            [attr.aria-checked]="form.controls.allowB2BRegistration.value"
+            (click)="toggleControl('allowB2BRegistration')"
+          >
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </article>
+  </ng-container>
+
+  <ng-container *ngIf="activeTab === 'homepage'">
+    <article class="panel section-card">
+      <h3>Homepage Promotion Banner</h3>
+
+      <div class="stack">
+        <div class="setting-list">
+          <div class="setting-row">
+            <div>
+              <p class="setting-title">Show Promo Section</p>
+              <p class="setting-desc">Display this big promotional banner between Featured Products and New Arrivals</p>
+            </div>
+            <button
+              type="button"
+              class="switch"
+              role="switch"
+              [class.on]="form.controls.homepagePromoEnabled.value"
+              [attr.aria-checked]="form.controls.homepagePromoEnabled.value"
+              (click)="toggleControl('homepagePromoEnabled')"
+            >
+              <span></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid-two">
+          <label class="field-stack" for="homepage-promo-badge">
+            <span>Badge Text</span>
+            <input id="homepage-promo-badge" type="text" formControlName="homepagePromoBadge" />
+          </label>
+
+          <label class="field-stack" for="homepage-promo-button-label">
+            <span>Button Label</span>
+            <input id="homepage-promo-button-label" type="text" formControlName="homepagePromoButtonLabel" />
+          </label>
+        </div>
+
+        <label class="field-stack" for="homepage-promo-title">
+          <span>Title</span>
+          <textarea id="homepage-promo-title" rows="3" formControlName="homepagePromoTitle"></textarea>
+        </label>
+
+        <label class="field-stack" for="homepage-promo-description">
+          <span>Description</span>
+          <textarea id="homepage-promo-description" rows="4" formControlName="homepagePromoDescription"></textarea>
+        </label>
+
+        <div class="grid-two">
+          <label class="field-stack" for="homepage-promo-button-link">
+            <span>Button Link</span>
+            <input id="homepage-promo-button-link" type="text" formControlName="homepagePromoButtonLink" placeholder="/shop" />
+            <small>Use internal links like `/shop` or full external links.</small>
+          </label>
+
+          <label class="field-stack" for="homepage-promo-image-alt">
+            <span>Image Alt Text</span>
+            <input id="homepage-promo-image-alt" type="text" formControlName="homepagePromoImageAlt" />
+          </label>
+        </div>
+
+        <label class="field-stack" for="homepage-promo-image-url">
+          <span>Image URL</span>
+          <input id="homepage-promo-image-url" type="text" formControlName="homepagePromoImageUrl" placeholder="https://example.com/banner.jpg" />
+          <small>Recommended wide image for the right side of the banner.</small>
+        </label>
+      </div>
+    </article>
+
+    <article class="panel section-card">
+      <h3>Live Preview</h3>
+
+      <div class="homepage-promo-preview" [class.preview-disabled]="!form.controls.homepagePromoEnabled.value">
+        <div class="preview-copy">
+          <span class="preview-badge">{{ form.controls.homepagePromoBadge.value || 'Limited Time Offer' }}</span>
+          <h4>{{ form.controls.homepagePromoTitle.value || 'Refresh your catalog with stronger weekly offers' }}</h4>
+          <p>
+            {{
+              form.controls.homepagePromoDescription.value ||
+                'Use the new homepage design to surface promotions, featured products, and customer trust signals more clearly.'
+            }}
+          </p>
+          <span class="preview-button">{{ form.controls.homepagePromoButtonLabel.value || 'Browse Promotions' }}</span>
+        </div>
+
+        <div class="preview-image-frame">
+          <img
+            [src]="form.controls.homepagePromoImageUrl.value || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80'"
+            [alt]="form.controls.homepagePromoImageAlt.value || 'Fresh vegetables'"
+          />
+        </div>
+      </div>
+      <small class="preview-note">
+        {{ form.controls.homepagePromoEnabled.value ? 'Section is enabled on the website.' : 'Section is disabled and will stay hidden on the website.' }}
+      </small>
+    </article>
+  </ng-container>
+
+  <ng-container *ngIf="activeTab === 'delivery'">
+    <article class="panel section-card">
+      <h3>Delivery Options</h3>
+
+      <div class="stack">
+        <div class="grid-two">
+          <label class="field-stack" for="standard-delivery">
+            <span>Standard Delivery Price</span>
+            <div class="money-field">
+              <em>DH</em>
+              <input id="standard-delivery" type="number" min="0" step="0.01" formControlName="standardDeliveryPrice" />
+            </div>
+          </label>
+
+          <label class="field-stack" for="express-delivery">
+            <span>Express Delivery Price</span>
+            <div class="money-field">
+              <em>DH</em>
+              <input id="express-delivery" type="number" min="0" step="0.01" formControlName="expressDeliveryPrice" />
+            </div>
+          </label>
+        </div>
+
+        <label class="field-stack" for="free-shipping-threshold">
+          <span>Free Shipping Threshold</span>
+          <div class="money-field">
+            <em>DH</em>
+            <input id="free-shipping-threshold" type="number" min="0" step="0.01" formControlName="freeShippingThreshold" />
+          </div>
+          <small>Orders above this amount get free shipping</small>
+        </label>
+
+        <div class="setting-list">
+          <div class="setting-row">
+            <div>
+              <p class="setting-title">Enable Express Delivery</p>
+              <p class="setting-desc">Offer express delivery option at checkout</p>
+            </div>
+            <button
+              type="button"
+              class="switch"
+              role="switch"
+              [class.on]="form.controls.enableExpressDelivery.value"
+              [attr.aria-checked]="form.controls.enableExpressDelivery.value"
+              (click)="toggleControl('enableExpressDelivery')"
+            >
+              <span></span>
+            </button>
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <p class="setting-title">Enable Store Pickup</p>
+              <p class="setting-desc">Allow customers to pick up orders</p>
+            </div>
+            <button
+              type="button"
+              class="switch"
+              role="switch"
+              [class.on]="form.controls.enableStorePickup.value"
+              [attr.aria-checked]="form.controls.enableStorePickup.value"
+              (click)="toggleControl('enableStorePickup')"
+            >
+              <span></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  </ng-container>
+
+  <ng-container *ngIf="activeTab === 'payment'">
+    <article class="panel section-card">
+      <h3>Payment Methods</h3>
+
+      <div class="payment-list">
+        <div class="payment-card">
+          <div class="payment-meta">
+            <div class="payment-icon blue">
+              <lucide-icon [img]="iconCard" [size]="20"></lucide-icon>
+            </div>
+            <div>
+              <p class="setting-title">Credit/Debit Card</p>
+              <p class="setting-desc">Accept major credit and debit cards</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.on]="form.controls.paymentCard.value"
+            [attr.aria-checked]="form.controls.paymentCard.value"
+            (click)="toggleControl('paymentCard')"
+          >
+            <span></span>
+          </button>
+        </div>
+
+        <div class="payment-card">
+          <div class="payment-meta">
+            <div class="payment-icon green">
+              <lucide-icon [img]="iconCash" [size]="20"></lucide-icon>
+            </div>
+            <div>
+              <p class="setting-title">Cash on Delivery</p>
+              <p class="setting-desc">Pay with cash upon delivery</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.on]="form.controls.paymentCash.value"
+            [attr.aria-checked]="form.controls.paymentCash.value"
+            (click)="toggleControl('paymentCash')"
+          >
+            <span></span>
+          </button>
+        </div>
+
+        <div class="payment-card">
+          <div class="payment-meta">
+            <div class="payment-icon purple">
+              <lucide-icon [img]="iconBank" [size]="20"></lucide-icon>
+            </div>
+            <div>
+              <p class="setting-title">Bank Transfer</p>
+              <p class="setting-desc">Direct bank transfer payments</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.on]="form.controls.paymentBank.value"
+            [attr.aria-checked]="form.controls.paymentBank.value"
+            (click)="toggleControl('paymentBank')"
+          >
+            <span></span>
+          </button>
+        </div>
+
+        <div class="payment-card">
+          <div class="payment-meta">
+            <div class="payment-icon orange">
+              <lucide-icon [img]="iconWallet" [size]="20"></lucide-icon>
+            </div>
+            <div>
+              <p class="setting-title">Digital Wallets</p>
+              <p class="setting-desc">PayPal, Apple Pay, Google Pay</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.on]="form.controls.paymentWallet.value"
+            [attr.aria-checked]="form.controls.paymentWallet.value"
+            (click)="toggleControl('paymentWallet')"
+          >
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </article>
+  </ng-container>
+
+  <ng-container *ngIf="activeTab === 'notifications'">
+    <article class="panel section-card">
+      <h3>Email Notifications</h3>
+
+      <div class="setting-list">
+        <div class="setting-row">
+          <div>
+            <p class="setting-title">New Order Notifications</p>
+            <p class="setting-desc">Receive email when new orders are placed</p>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.on]="form.controls.notifyNewOrders.value"
+            [attr.aria-checked]="form.controls.notifyNewOrders.value"
+            (click)="toggleControl('notifyNewOrders')"
+          >
+            <span></span>
+          </button>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <p class="setting-title">Low Stock Alerts</p>
+            <p class="setting-desc">Get notified when products are running low</p>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.on]="form.controls.notifyLowStock.value"
+            [attr.aria-checked]="form.controls.notifyLowStock.value"
+            (click)="toggleControl('notifyLowStock')"
+          >
+            <span></span>
+          </button>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <p class="setting-title">Customer Registration</p>
+            <p class="setting-desc">Notify when new customers register</p>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.on]="form.controls.notifyCustomerRegistration.value"
+            [attr.aria-checked]="form.controls.notifyCustomerRegistration.value"
+            (click)="toggleControl('notifyCustomerRegistration')"
+          >
+            <span></span>
+          </button>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <p class="setting-title">Daily Sales Report</p>
+            <p class="setting-desc">Receive daily sales summary</p>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [class.on]="form.controls.notifyDailyReport.value"
+            [attr.aria-checked]="form.controls.notifyDailyReport.value"
+            (click)="toggleControl('notifyDailyReport')"
+          >
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </article>
+  </ng-container>
+
+  <div class="actions-end">
+    <button type="button" class="btn btn-primary" [disabled]="loading || saving" (click)="save()">
+      <lucide-icon [img]="iconSave" [size]="16"></lucide-icon>
+      {{ saving ? 'Saving...' : 'Save Changes' }}
+    </button>
+    <span *ngIf="saved" class="saved-note">Settings saved successfully.</span>
+  </div>
+</section>

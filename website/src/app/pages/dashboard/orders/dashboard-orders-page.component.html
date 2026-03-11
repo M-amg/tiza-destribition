@@ -1,0 +1,89 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold">{{ 'dashboard.orders.title' | t }}</h1>
+    <p class="text-muted-foreground mt-2">{{ 'dashboard.orders.subtitle' | t }}</p>
+  </div>
+
+  @if (isB2B()) {
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <article class="p-4 border rounded-lg">
+        <p class="text-sm text-muted-foreground mb-1">{{ 'dashboard.home.totalOrders' | t }}</p>
+        <p class="text-2xl font-bold">{{ orders.length }}</p>
+      </article>
+      <article class="p-4 border rounded-lg">
+        <p class="text-sm text-muted-foreground mb-1">{{ 'dashboard.home.totalSpent' | t }}</p>
+        <p class="text-2xl font-bold text-orange-500">{{ totalSpent | number: '1.2-2' }} DH</p>
+      </article>
+      <article class="p-4 border rounded-lg bg-green-50">
+        <p class="text-sm text-muted-foreground mb-1">{{ 'dashboard.home.totalSavings' | t }}</p>
+        <p class="text-2xl font-bold text-green-600">{{ totalSavings | number: '1.2-2' }} DH</p>
+      </article>
+    </div>
+  }
+
+  <section class="p-6 border rounded-lg">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block mb-1">{{ 'dashboard.orders.searchOrders' | t }}</label>
+        <input type="search" [(ngModel)]="searchTerm" name="searchTerm" [placeholder]="'common.searchOrders' | t" />
+      </div>
+
+      <div>
+        <label class="block mb-1">{{ 'common.status' | t }}</label>
+        <select [(ngModel)]="statusFilter" name="statusFilter">
+          @for (status of availableStatuses; track status) {
+            <option [value]="status">{{ status === 'all' ? ('dashboard.orders.allOrders' | t) : (('status.' + status) | t) }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <section class="p-6 border rounded-lg">
+    <p class="text-sm text-muted-foreground mb-4">{{ 'dashboard.orders.showing' | t: { count: filteredOrders.length, total: orders.length } }}</p>
+
+    @if (loading) {
+      <p class="text-muted-foreground">{{ 'common.loadingOrders' | t }}</p>
+    } @else if (filteredOrders.length === 0) {
+      <div class="text-center py-12">
+        <p class="text-muted-foreground">{{ 'dashboard.orders.noOrdersFound' | t }}</p>
+        <a routerLink="/shop" class="inline-block mt-4 border rounded-md px-4 py-2 bg-primary text-white">{{ 'common.startShopping' | t }}</a>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left p-2">{{ 'common.orderNumber' | t }}</th>
+              <th class="text-left p-2">{{ 'common.date' | t }}</th>
+              <th class="text-left p-2">{{ 'common.items' | t }}</th>
+              <th class="text-left p-2">{{ 'common.total' | t }}</th>
+              @if (isB2B()) {
+                <th class="text-left p-2">{{ 'dashboard.home.totalSavings' | t }}</th>
+              }
+              <th class="text-left p-2">{{ 'common.status' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (order of filteredOrders; track order.id) {
+              <tr class="border-b">
+                <td class="p-2 font-medium">{{ order.orderNumber }}</td>
+                <td class="p-2">{{ order.placedAt | date: 'mediumDate' }}</td>
+                <td class="p-2">{{ order.items.length }} {{ 'common.items' | t }}</td>
+                <td class="p-2 font-bold">{{ order.totalAmount | number: '1.2-2' }} DH</td>
+                @if (isB2B()) {
+                  <td class="p-2 text-green-600 font-semibold">{{ (order.couponDiscount ?? 0) | number: '1.2-2' }} DH</td>
+                }
+                <td class="p-2">
+                  <span class="px-2 py-1 text-white text-xs rounded" [class]="statusClass(order.status)">
+                    {{ ('status.' + order.status.toLowerCase()) | t }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

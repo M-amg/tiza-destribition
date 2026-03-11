@@ -1,0 +1,98 @@
+<div class="min-h-screen flex">
+  <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-primary/80 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:24px_24px]"></div>
+
+    <div class="relative z-10 flex flex-col items-center justify-center w-full p-12 text-white">
+      <div class="max-w-md text-center">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-full mb-6">
+          <lucide-icon name="shopping-bag" [size]="40"></lucide-icon>
+        </div>
+        <h1 class="text-4xl font-bold mb-4">{{ 'auth.login.welcome' | t }}</h1>
+        <p class="text-lg text-white/90 mb-8">{{ 'auth.login.subtitle' | t }}</p>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-5 text-left">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                <lucide-icon name="building-2" [size]="16"></lucide-icon>
+              </div>
+              <div class="text-2xl font-bold">B2B</div>
+            </div>
+            <p class="text-sm text-white/80 leading-relaxed">{{ 'auth.login.b2bText' | t }}</p>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-5 text-left">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-8 h-8 rounded-lg bg-orange-500/40 flex items-center justify-center">
+                <lucide-icon name="user" [size]="16"></lucide-icon>
+              </div>
+              <div class="text-2xl font-bold">B2C</div>
+            </div>
+            <p class="text-sm text-white/80 leading-relaxed">{{ 'auth.login.b2cText' | t }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-1 flex items-center justify-center p-8 bg-background">
+      <div class="w-full max-w-md p-8 shadow-lg border rounded-lg bg-card">
+        <div class="flex flex-col items-center mb-8">
+          <a routerLink="/" class="flex items-center gap-2 mb-6">
+            <lucide-icon name="package" [size]="32" class="text-primary"></lucide-icon>
+            <span class="text-xl font-bold text-primary">Tiza Distribution</span>
+          </a>
+        <h1 class="text-3xl font-bold">{{ 'auth.login.signIn' | t }}</h1>
+        <p class="text-muted-foreground text-center mt-2">{{ 'auth.login.signInPrompt' | t }}</p>
+      </div>
+
+      @if (errorMessage) {
+        <p class="mb-4 rounded border border-red-200 bg-red-50 p-3 text-red-700">{{ errorMessage }}</p>
+      }
+
+      <form (ngSubmit)="submit()" class="space-y-4">
+        <div>
+          <label class="block mb-1">{{ 'checkout.emailAddress' | t }}</label>
+          <input type="email" [(ngModel)]="email" name="email" [placeholder]="'auth.login.emailPlaceholder' | t" required [disabled]="loading" />
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label>{{ 'common.password' | t }}</label>
+            <a routerLink="/forgot-password" class="text-sm text-primary hover:underline">{{ 'auth.login.forgotPassword' | t }}</a>
+          </div>
+          <input type="password" [(ngModel)]="password" name="password" [placeholder]="'auth.login.passwordPlaceholder' | t" required [disabled]="loading" minlength="8" />
+        </div>
+
+        <label class="flex items-center space-x-2 text-sm">
+          <input type="checkbox" [(ngModel)]="rememberMe" name="rememberMe" [disabled]="loading" />
+          <span>{{ 'auth.login.rememberMe' | t }}</span>
+        </label>
+
+        <button type="submit" class="w-full border rounded-md px-4 py-2 bg-primary text-white" [disabled]="loading">
+          {{ loading ? ('auth.login.signingIn' | t) : ('auth.login.signIn' | t) }}
+        </button>
+      </form>
+
+      <div class="my-6 relative">
+        <div class="absolute inset-0 flex items-center"><div class="w-full border-t"></div></div>
+        <div class="relative flex justify-center text-xs uppercase">
+          <span class="bg-background px-2 text-muted-foreground">{{ 'auth.login.orContinueWith' | t }}</span>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <button type="button" class="w-full border rounded-md px-4 py-2" [disabled]="loading" (click)="socialLogin('Google')">
+          {{ 'auth.login.continueWithGoogle' | t }}
+        </button>
+        <button type="button" class="w-full border rounded-md px-4 py-2" [disabled]="loading" (click)="socialLogin('Facebook')">
+          {{ 'auth.login.continueWithFacebook' | t }}
+        </button>
+      </div>
+
+      <div class="mt-6 text-center text-sm">
+        <span class="text-muted-foreground">{{ 'auth.login.noAccount' | t }} </span>
+        <a routerLink="/register" class="text-primary hover:underline font-semibold">{{ 'auth.login.registerNow' | t }}</a>
+      </div>
+    </div>
+  </div>
+</div>

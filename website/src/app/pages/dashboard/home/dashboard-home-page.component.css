@@ -1,0 +1,49 @@
+:host {
+  display: block;
+}
+
+.profile-tabs-shell {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+  padding: 0.3rem;
+  border-radius: 1rem;
+  background: rgb(241 245 249);
+  border: 1px solid rgb(226 232 240);
+}
+
+.profile-tab-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 1px solid transparent;
+  border-radius: 0.85rem;
+  background: transparent;
+  color: rgb(30 41 59);
+  padding: 0.9rem 1rem;
+  font-weight: 600;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.profile-tab-button:hover {
+  color: rgb(15 23 42);
+  background: rgb(248 250 252);
+}
+
+.profile-tab-button--active {
+  border-color: rgb(226 232 240);
+  background: rgb(255 255 255);
+  color: rgb(15 23 42);
+  box-shadow: 0 6px 18px rgb(15 23 42 / 0.08);
+}
+
+@media (min-width: 768px) {
+  .profile-tabs-shell {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}

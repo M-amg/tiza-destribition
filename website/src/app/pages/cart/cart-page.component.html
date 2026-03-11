@@ -1,0 +1,129 @@
+<div class="container mx-auto px-4 py-8">
+  @if (loading) {
+    <p>{{ 'common.loadingCart' | t }}</p>
+  } @else if (isEmpty) {
+    <div class="max-w-md mx-auto text-center py-16">
+      <div class="h-24 w-24 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+        <lucide-icon name="shopping-bag" [size]="44" class="text-muted-foreground"></lucide-icon>
+      </div>
+      <h1 class="text-2xl font-bold mb-2">{{ 'cart.emptyTitle' | t }}</h1>
+      <p class="text-muted-foreground mb-6">{{ 'cart.emptyText' | t }}</p>
+      <a routerLink="/shop" class="inline-flex items-center justify-center rounded-md border px-6 py-3 bg-primary text-white">
+        {{ 'common.continueShopping' | t }}
+      </a>
+    </div>
+  } @else if (cart) {
+    <h1 class="text-3xl font-bold mb-8">{{ 'cart.shoppingCart' | t }}</h1>
+
+    @if (errorMessage) {
+      <p class="mb-4 rounded border border-red-200 bg-red-50 p-3 text-red-700">{{ errorMessage }}</p>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2">
+        <div class="bg-card border rounded-lg divide-y">
+          @for (item of cart.items; track item.id) {
+            <div class="p-6">
+              <div class="flex gap-4">
+                <div class="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                  <img
+                    [src]="item.imageUrl || 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=200&h=200&fit=crop'"
+                    [alt]="item.productName"
+                    class="w-full h-full object-cover"
+                  />
+                </div>
+
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold mb-1 truncate">{{ item.productName }}</h3>
+                  <p class="text-lg font-bold text-primary mb-3">{{ item.unitPrice | number: '1.2-2' }} DH</p>
+
+                  <div class="flex items-center gap-3">
+                    <button type="button" class="border rounded-md h-8 w-8 inline-flex items-center justify-center" (click)="updateQuantity(item, item.quantity - 1)">
+                      <lucide-icon name="minus" [size]="14"></lucide-icon>
+                    </button>
+                    <span class="text-sm font-semibold w-8 text-center">{{ item.quantity }}</span>
+                    <button type="button" class="border rounded-md h-8 w-8 inline-flex items-center justify-center" (click)="updateQuantity(item, item.quantity + 1)">
+                      <lucide-icon name="plus" [size]="14"></lucide-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="flex flex-col items-end justify-between">
+                  <button type="button" class="text-red-600 text-sm inline-flex items-center gap-1" (click)="removeItem(item.id)">
+                    <lucide-icon name="trash-2" [size]="14"></lucide-icon>
+                    {{ 'cart.remove' | t }}
+                  </button>
+                  <p class="text-lg font-bold">{{ item.lineTotal | number: '1.2-2' }} DH</p>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div>
+        <div class="bg-card border rounded-lg p-6 sticky top-24">
+          <h2 class="text-xl font-bold mb-4">{{ 'cart.orderSummary' | t }}</h2>
+
+          <div class="space-y-3 mb-6">
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">{{ 'common.subtotal' | t }}</span>
+              <span class="font-semibold">{{ cart.subtotal | number: '1.2-2' }} DH</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">{{ 'common.shipping' | t }}</span>
+              <span class="font-semibold">
+                @if (cart.shippingAmount === 0) {
+                  {{ 'common.free' | t }}
+                } @else {
+                  {{ cart.shippingAmount | number: '1.2-2' }} DH
+                }
+              </span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">{{ 'common.tax' | t }}</span>
+              <span class="font-semibold">{{ cart.taxAmount | number: '1.2-2' }} DH</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">{{ 'common.discount' | t }}</span>
+              <span class="font-semibold">- {{ cart.discountAmount | number: '1.2-2' }} DH</span>
+            </div>
+            <div class="border-t pt-3 flex justify-between">
+              <span class="text-lg font-bold">{{ 'common.total' | t }}</span>
+              <span class="text-lg font-bold text-primary">{{ cart.totalAmount | number: '1.2-2' }} DH</span>
+            </div>
+          </div>
+
+          @if (freeShippingRemaining > 0) {
+            <div class="bg-accent/10 border border-accent/20 rounded-lg p-3 mb-4 text-sm">
+              {{ 'cart.addForFreeShipping' | t: { amount: freeShippingRemaining } }}
+            </div>
+          }
+
+          @if (isAuthenticated() && cart.couponCode) {
+            <div class="text-sm mb-3">{{ 'cart.appliedCoupon' | t }} <strong>{{ cart.couponCode }}</strong></div>
+            <button type="button" class="w-full border rounded-md px-3 py-2 mb-3" (click)="removeCoupon()">
+              {{ 'cart.removeCoupon' | t }}
+            </button>
+          } @else if (isAuthenticated()) {
+            <div class="space-y-2 mb-4">
+              <input type="text" [(ngModel)]="couponCode" name="couponCode" [placeholder]="'cart.couponCode' | t" />
+              <button type="button" class="w-full border rounded-md px-3 py-2" (click)="applyCoupon()">
+                {{ 'cart.applyCoupon' | t }}
+              </button>
+            </div>
+          } @else {
+            <p class="mb-4 text-sm text-muted-foreground">{{ 'cart.signInCoupon' | t }}</p>
+          }
+
+          <a routerLink="/checkout" class="block w-full text-center border rounded-md px-4 py-3 bg-primary text-white mb-3">
+            {{ 'cart.proceedToCheckout' | t }}
+          </a>
+          <a routerLink="/shop" class="block w-full text-center border rounded-md px-4 py-3">
+            {{ 'common.continueShopping' | t }}
+          </a>
+        </div>
+      </div>
+    </div>
+  }
+</div>

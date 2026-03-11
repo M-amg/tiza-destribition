@@ -1,0 +1,38 @@
+﻿<section class="page-head">
+  <div>
+    <h1>Reports</h1>
+    <p>Revenue and order analytics for quick decision making.</p>
+  </div>
+</section>
+
+<section class="cards-row">
+  <article class="panel metric"><small>Total Revenue</small><strong>{{ totalRevenue | number : '1.0-2' }} DH</strong></article>
+  <article class="panel metric"><small>Total Orders</small><strong>{{ data.orders.length }}</strong></article>
+  <article class="panel metric"><small>Average Ticket</small><strong>{{ averageOrder | number : '1.2-2' }} DH</strong></article>
+</section>
+
+<section class="panel">
+  <h2>Monthly Revenue</h2>
+  <div class="bar-list">
+    <div class="bar-row" *ngFor="let metric of data.monthlyMetrics">
+      <span>{{ metric.month }}</span>
+      <div class="bar-track">
+        <div class="bar-fill" [style.width.%]="(metric.revenue / maxRevenue) * 100"></div>
+      </div>
+      <strong>{{ metric.revenue | number : '1.0-0' }} DH</strong>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Monthly Orders</h2>
+  <div class="bar-list">
+    <div class="bar-row" *ngFor="let metric of data.monthlyMetrics">
+      <span>{{ metric.month }}</span>
+      <div class="bar-track orange">
+        <div class="bar-fill" [style.width.%]="(metric.orders / 80) * 100"></div>
+      </div>
+      <strong>{{ metric.orders }}</strong>
+    </div>
+  </div>
+</section>

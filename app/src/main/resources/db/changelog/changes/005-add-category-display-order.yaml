@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-01-add-category-display-order
+      author: codex
+      changes:
+        - addColumn:
+            tableName: categories
+            columns:
+              - column:
+                  name: display_order
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

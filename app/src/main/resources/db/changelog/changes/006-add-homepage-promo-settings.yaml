@@ -1,0 +1,304 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-01-homepage-promo-enabled
+      author: codex
+      preConditions:
+        onFail: MARK_RAN
+        onError: HALT
+        sqlCheck:
+          expectedResult: 0
+          sql: "SELECT COUNT(*) FROM store_settings WHERE setting_key = 'homepage.promo.enabled'"
+      changes:
+        - insert:
+            tableName: store_settings
+            columns:
+              - column:
+                  name: id
+                  value: '70000000-0000-0000-0000-000000000001'
+              - column:
+                  name: setting_key
+                  value: 'homepage.promo.enabled'
+              - column:
+                  name: value_type
+                  value: 'BOOLEAN'
+              - column:
+                  name: value_text
+                  value: 'true'
+              - column:
+                  name: description
+                  value: 'Homepage promo section enabled'
+              - column:
+                  name: is_public
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  value: '2026-03-08T00:00:00Z'
+              - column:
+                  name: updated_at
+                  value: '2026-03-08T00:00:00Z'
+
+  - changeSet:
+      id: 006-02-homepage-promo-badge
+      author: codex
+      preConditions:
+        onFail: MARK_RAN
+        onError: HALT
+        sqlCheck:
+          expectedResult: 0
+          sql: "SELECT COUNT(*) FROM store_settings WHERE setting_key = 'homepage.promo.badge'"
+      changes:
+        - insert:
+            tableName: store_settings
+            columns:
+              - column:
+                  name: id
+                  value: '70000000-0000-0000-0000-000000000002'
+              - column:
+                  name: setting_key
+                  value: 'homepage.promo.badge'
+              - column:
+                  name: value_type
+                  value: 'STRING'
+              - column:
+                  name: value_text
+                  value: 'Limited Time Offer'
+              - column:
+                  name: description
+                  value: 'Homepage promo badge text'
+              - column:
+                  name: is_public
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  value: '2026-03-08T00:00:00Z'
+              - column:
+                  name: updated_at
+                  value: '2026-03-08T00:00:00Z'
+
+  - changeSet:
+      id: 006-03-homepage-promo-title
+      author: codex
+      preConditions:
+        onFail: MARK_RAN
+        onError: HALT
+        sqlCheck:
+          expectedResult: 0
+          sql: "SELECT COUNT(*) FROM store_settings WHERE setting_key = 'homepage.promo.title'"
+      changes:
+        - insert:
+            tableName: store_settings
+            columns:
+              - column:
+                  name: id
+                  value: '70000000-0000-0000-0000-000000000003'
+              - column:
+                  name: setting_key
+                  value: 'homepage.promo.title'
+              - column:
+                  name: value_type
+                  value: 'STRING'
+              - column:
+                  name: value_text
+                  value: 'Refresh your catalog with stronger weekly offers'
+              - column:
+                  name: description
+                  value: 'Homepage promo title'
+              - column:
+                  name: is_public
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  value: '2026-03-08T00:00:00Z'
+              - column:
+                  name: updated_at
+                  value: '2026-03-08T00:00:00Z'
+
+  - changeSet:
+      id: 006-04-homepage-promo-description
+      author: codex
+      preConditions:
+        onFail: MARK_RAN
+        onError: HALT
+        sqlCheck:
+          expectedResult: 0
+          sql: "SELECT COUNT(*) FROM store_settings WHERE setting_key = 'homepage.promo.description'"
+      changes:
+        - insert:
+            tableName: store_settings
+            columns:
+              - column:
+                  name: id
+                  value: '70000000-0000-0000-0000-000000000004'
+              - column:
+                  name: setting_key
+                  value: 'homepage.promo.description'
+              - column:
+                  name: value_type
+                  value: 'STRING'
+              - column:
+                  name: value_text
+                  value: 'Use the new homepage design to surface promotions, featured products, and customer trust signals more clearly.'
+              - column:
+                  name: description
+                  value: 'Homepage promo description'
+              - column:
+                  name: is_public
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  value: '2026-03-08T00:00:00Z'
+              - column:
+                  name: updated_at
+                  value: '2026-03-08T00:00:00Z'
+
+  - changeSet:
+      id: 006-05-homepage-promo-button-label
+      author: codex
+      preConditions:
+        onFail: MARK_RAN
+        onError: HALT
+        sqlCheck:
+          expectedResult: 0
+          sql: "SELECT COUNT(*) FROM store_settings WHERE setting_key = 'homepage.promo.button_label'"
+      changes:
+        - insert:
+            tableName: store_settings
+            columns:
+              - column:
+                  name: id
+                  value: '70000000-0000-0000-0000-000000000005'
+              - column:
+                  name: setting_key
+                  value: 'homepage.promo.button_label'
+              - column:
+                  name: value_type
+                  value: 'STRING'
+              - column:
+                  name: value_text
+                  value: 'Browse Promotions'
+              - column:
+                  name: description
+                  value: 'Homepage promo button label'
+              - column:
+                  name: is_public
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  value: '2026-03-08T00:00:00Z'
+              - column:
+                  name: updated_at
+                  value: '2026-03-08T00:00:00Z'
+
+  - changeSet:
+      id: 006-06-homepage-promo-button-link
+      author: codex
+      preConditions:
+        onFail: MARK_RAN
+        onError: HALT
+        sqlCheck:
+          expectedResult: 0
+          sql: "SELECT COUNT(*) FROM store_settings WHERE setting_key = 'homepage.promo.button_link'"
+      changes:
+        - insert:
+            tableName: store_settings
+            columns:
+              - column:
+                  name: id
+                  value: '70000000-0000-0000-0000-000000000006'
+              - column:
+                  name: setting_key
+                  value: 'homepage.promo.button_link'
+              - column:
+                  name: value_type
+                  value: 'STRING'
+              - column:
+                  name: value_text
+                  value: '/shop'
+              - column:
+                  name: description
+                  value: 'Homepage promo button link'
+              - column:
+                  name: is_public
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  value: '2026-03-08T00:00:00Z'
+              - column:
+                  name: updated_at
+                  value: '2026-03-08T00:00:00Z'
+
+  - changeSet:
+      id: 006-07-homepage-promo-image-url
+      author: codex
+      preConditions:
+        onFail: MARK_RAN
+        onError: HALT
+        sqlCheck:
+          expectedResult: 0
+          sql: "SELECT COUNT(*) FROM store_settings WHERE setting_key = 'homepage.promo.image_url'"
+      changes:
+        - insert:
+            tableName: store_settings
+            columns:
+              - column:
+                  name: id
+                  value: '70000000-0000-0000-0000-000000000007'
+              - column:
+                  name: setting_key
+                  value: 'homepage.promo.image_url'
+              - column:
+                  name: value_type
+                  value: 'STRING'
+              - column:
+                  name: value_text
+                  value: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80'
+              - column:
+                  name: description
+                  value: 'Homepage promo image URL'
+              - column:
+                  name: is_public
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  value: '2026-03-08T00:00:00Z'
+              - column:
+                  name: updated_at
+                  value: '2026-03-08T00:00:00Z'
+
+  - changeSet:
+      id: 006-08-homepage-promo-image-alt
+      author: codex
+      preConditions:
+        onFail: MARK_RAN
+        onError: HALT
+        sqlCheck:
+          expectedResult: 0
+          sql: "SELECT COUNT(*) FROM store_settings WHERE setting_key = 'homepage.promo.image_alt'"
+      changes:
+        - insert:
+            tableName: store_settings
+            columns:
+              - column:
+                  name: id
+                  value: '70000000-0000-0000-0000-000000000008'
+              - column:
+                  name: setting_key
+                  value: 'homepage.promo.image_alt'
+              - column:
+                  name: value_type
+                  value: 'STRING'
+              - column:
+                  name: value_text
+                  value: 'Fresh vegetables'
+              - column:
+                  name: description
+                  value: 'Homepage promo image alt text'
+              - column:
+                  name: is_public
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  value: '2026-03-08T00:00:00Z'
+              - column:
+                  name: updated_at
+                  value: '2026-03-08T00:00:00Z'

@@ -1,0 +1,155 @@
+<section class="page-head products-head">
+  <div>
+    <h1>Products</h1>
+    <p>Manage your product catalog with dual B2B/B2C pricing.</p>
+  </div>
+  <a routerLink="/products/new" class="btn btn-primary">
+    <lucide-icon [img]="iconPlus" [size]="16"></lucide-icon>
+    Add Product
+  </a>
+</section>
+
+<section class="panel filters-panel">
+  <div class="filters-grid">
+    <div class="field field-search">
+      <label for="products-search">Search</label>
+      <div class="search-wrap">
+        <lucide-icon class="search-icon" [img]="iconSearch" [size]="16"></lucide-icon>
+        <input
+          id="products-search"
+          type="search"
+          placeholder="Search by name or SKU..."
+          [(ngModel)]="searchTerm"
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="products-category">Category</label>
+      <select id="products-category" [(ngModel)]="categoryFilter">
+        <option value="all">All Categories</option>
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="products-stock">Stock Status</label>
+      <select id="products-stock" [(ngModel)]="stockFilter">
+        <option value="all">All Stock</option>
+        <option value="in_stock">In Stock</option>
+        <option value="low_stock">Low Stock</option>
+        <option value="out_of_stock">Out of Stock</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="products-status">Status</label>
+      <select id="products-status" [(ngModel)]="statusFilter">
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="disabled">Disabled</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="price-view-row">
+    <strong>View prices as:</strong>
+    <div class="price-toggle">
+      <button
+        type="button"
+        class="toggle-btn"
+        [class.active-b2c]="priceView === 'B2C'"
+        [class.inactive]="priceView !== 'B2C'"
+        (click)="setPriceView('B2C')"
+      >
+        B2C Pricing
+      </button>
+      <button
+        type="button"
+        class="toggle-btn"
+        [class.active-b2b]="priceView === 'B2B'"
+        [class.inactive]="priceView !== 'B2B'"
+        (click)="setPriceView('B2B')"
+      >
+        B2B Pricing
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="list-meta">
+  <p>Showing {{ filteredProducts.length }} of {{ products.length }} products</p>
+</section>
+
+<section class="panel products-table-panel">
+  <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="loading-message" *ngIf="loading">Loading products...</p>
+
+  <div class="table-scroll">
+    <table class="data-table products-table">
+      <thead>
+        <tr>
+          <th class="check-col"><input type="checkbox" aria-label="Select all products" /></th>
+          <th>Product</th>
+          <th>SKU</th>
+          <th>Category</th>
+          <th>{{ priceView === 'B2C' ? 'B2C Price' : 'B2B Price' }}</th>
+          <th>Stock</th>
+          <th>Status</th>
+          <th>Updated</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="!loading && filteredProducts.length === 0">
+          <td colspan="9" class="empty-cell">No products found</td>
+        </tr>
+        <tr *ngFor="let product of filteredProducts; trackBy: trackById">
+          <td><input type="checkbox" [attr.aria-label]="'Select ' + product.name" /></td>
+          <td>
+            <div class="product-cell">
+              <img [src]="product.image" [alt]="product.name" />
+              <div>
+                <strong>{{ product.name }}</strong>
+                <small>{{ product.brand }}</small>
+                <small *ngIf="product.featured" class="home-flag">Home featured</small>
+                <small *ngIf="product.isNew" class="new-flag">New arrivals</small>
+              </div>
+            </div>
+          </td>
+          <td class="mono">{{ product.sku }}</td>
+          <td><span class="chip chip-outline">{{ product.category }}</span></td>
+          <td class="price">{{ getPrice(product) | number : '1.2-2' }} DH</td>
+          <td>
+            <div class="stock-cell">
+              <strong>{{ product.stockQuantity }}</strong>
+              <span [class]="getStockStatus(product).className">{{ getStockStatus(product).label }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="chip" [class.chip-success]="product.status === 'active'" [class.chip-muted]="product.status === 'disabled'">
+              {{ product.status }}
+            </span>
+          </td>
+          <td>{{ product.updatedDate }}</td>
+          <td>
+            <div class="actions">
+              <a [routerLink]="['/products', product.id, 'edit']" class="btn btn-ghost btn-sm btn-icon" aria-label="Edit product">
+                <lucide-icon [img]="iconEdit" [size]="16"></lucide-icon>
+              </a>
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm btn-icon btn-danger-ghost"
+                [disabled]="deletingId === product.id"
+                (click)="deleteProduct(product)"
+                aria-label="Delete product"
+              >
+                <lucide-icon [img]="iconTrash" [size]="16"></lucide-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

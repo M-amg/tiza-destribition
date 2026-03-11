@@ -1,0 +1,82 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold">{{ 'dashboard.invoices.title' | t }}</h1>
+    <p class="text-muted-foreground mt-2">{{ 'dashboard.invoices.subtitle' | t }}</p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <article class="p-4 border rounded-lg">
+      <p class="text-sm text-muted-foreground mb-1">{{ 'dashboard.invoices.totalInvoices' | t }}</p>
+      <p class="text-2xl font-bold">{{ invoices.length }}</p>
+    </article>
+    <article class="p-4 border rounded-lg bg-green-50">
+      <p class="text-sm text-muted-foreground mb-1">{{ 'common.paid' | t }}</p>
+      <p class="text-2xl font-bold text-green-600">{{ paidAmount | number: '1.2-2' }} DH</p>
+    </article>
+    <article class="p-4 border rounded-lg bg-yellow-50">
+      <p class="text-sm text-muted-foreground mb-1">{{ 'common.pending' | t }}</p>
+      <p class="text-2xl font-bold text-yellow-600">{{ pendingAmount | number: '1.2-2' }} DH</p>
+    </article>
+  </div>
+
+  <section class="p-6 border rounded-lg">
+    <label class="block mb-1">{{ 'dashboard.invoices.searchInvoices' | t }}</label>
+    <input type="search" [(ngModel)]="searchTerm" name="searchTerm" [placeholder]="'common.searchInvoices' | t" />
+  </section>
+
+  <section class="p-6 border rounded-lg">
+    <p class="text-sm text-muted-foreground mb-4">{{ 'dashboard.invoices.showing' | t: { count: filteredInvoices.length, total: invoices.length } }}</p>
+
+    @if (loading) {
+      <p class="text-muted-foreground">{{ 'common.loadingInvoices' | t }}</p>
+    } @else if (filteredInvoices.length === 0) {
+      <div class="text-center py-12">
+        <p class="text-muted-foreground">{{ 'dashboard.invoices.noInvoicesFound' | t }}</p>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left p-2">{{ 'common.invoiceNumber' | t }}</th>
+              <th class="text-left p-2">{{ 'common.orderNumber' | t }}</th>
+              <th class="text-left p-2">{{ 'common.date' | t }}</th>
+              <th class="text-left p-2">{{ 'common.amount' | t }}</th>
+              <th class="text-left p-2">{{ 'common.status' | t }}</th>
+              <th class="text-right p-2">{{ 'common.actions' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (invoice of filteredInvoices; track invoice.id) {
+              <tr class="border-b">
+                <td class="p-2 font-medium">{{ invoice.invoiceNumber }}</td>
+                <td class="p-2 font-mono text-xs">{{ invoice.orderNumber }}</td>
+                <td class="p-2">{{ invoice.issuedAt | date: 'mediumDate' }}</td>
+                <td class="p-2 font-bold">{{ invoice.totalAmount | number: '1.2-2' }} DH</td>
+                <td class="p-2">
+                  <span class="px-2 py-1 text-white text-xs rounded" [class]="statusClass(invoice.status)">
+                    {{ ('status.' + invoice.status.toLowerCase()) | t }}
+                  </span>
+                </td>
+                <td class="p-2 text-right">
+                  <button
+                    type="button"
+                    class="border rounded-md px-3 py-1"
+                    [disabled]="!invoice.pdfUrl"
+                    (click)="openInvoice(invoice)"
+                  >
+                    {{ 'common.downloadPdf' | t }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <section class="p-4 border rounded-lg bg-blue-50 text-sm text-blue-700">
+    <strong>Note:</strong> {{ 'dashboard.invoices.noteText' | t }}
+  </section>
+</div>

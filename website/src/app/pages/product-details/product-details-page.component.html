@@ -1,0 +1,247 @@
+<div>
+  @if (loading) {
+    <div class="container mx-auto px-4 py-16 text-center">{{ 'product.loading' | t }}</div>
+  } @else if (!product) {
+    <div class="container mx-auto px-4 py-16 text-center">
+      <h1 class="text-2xl font-bold mb-4">{{ 'product.productNotFound' | t }}</h1>
+      <a routerLink="/shop" class="border rounded-md px-4 py-2">{{ 'product.backToShop' | t }}</a>
+    </div>
+  } @else {
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+        <a routerLink="/" class="hover:text-foreground">{{ 'common.home' | t }}</a>
+        <span>/</span>
+        <a routerLink="/shop" class="hover:text-foreground">{{ 'common.shop' | t }}</a>
+        <span>/</span>
+        <a [routerLink]="['/shop']" [queryParams]="{ category: product.category.id }" class="hover:text-foreground">
+          {{ product.category.name }}
+        </a>
+        <span>/</span>
+        <span class="text-foreground">{{ product.name }}</span>
+      </div>
+      <a routerLink="/shop" class="inline-flex items-center mt-2 text-sm hover:text-primary gap-1">
+        <lucide-icon name="arrow-left" [size]="16"></lucide-icon>
+        {{ 'product.backToShop' | t }}
+      </a>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div>
+          <div class="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-4">
+            <img
+              [src]="product.images[selectedImageIndex] || product.category.imageUrl || 'https://via.placeholder.com/600x600?text=Product'"
+              [alt]="product.name"
+              class="w-full h-full object-cover"
+            />
+          </div>
+          <div class="grid grid-cols-4 gap-4">
+            @for (image of product.images; track image; let i = $index) {
+              <button
+                type="button"
+                (click)="selectedImageIndex = i"
+                class="aspect-square rounded-lg overflow-hidden border-2"
+                [class.border-primary]="selectedImageIndex === i"
+                [class.border-transparent]="selectedImageIndex !== i"
+              >
+                <img [src]="image" [alt]="product.name" class="w-full h-full object-cover" />
+              </button>
+            }
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs px-2 py-1 rounded bg-secondary">{{ product.category.name }}</span>
+            @if (product.isNew) {
+              <span class="text-xs px-2 py-1 rounded bg-primary text-white">New</span>
+            }
+            @if (product.discountValue) {
+              <span class="text-xs px-2 py-1 rounded bg-accent text-white">Discount</span>
+            }
+            @if (isB2B() && savingsPercent(product) > 0) {
+              <span class="text-xs px-2 py-1 rounded bg-green-600 text-white">{{ 'product.saveMoney' | t: { amount: savingsPercent(product) } }}</span>
+            }
+          </div>
+
+          <h1 class="text-3xl font-bold mb-4">{{ product.name }}</h1>
+
+          <div class="flex items-center gap-2 mb-4">
+            <div class="flex text-accent">
+              @for (filled of ratingStars(product.rating); track $index) {
+                @if (filled) {
+                  <lucide-icon name="star" [size]="18" class="fill-current"></lucide-icon>
+                } @else {
+                  <lucide-icon name="star" [size]="18"></lucide-icon>
+                }
+              }
+            </div>
+            <span class="text-muted-foreground">{{ 'product.reviewsCount' | t: { rating: product.rating, count: product.reviewCount } }}</span>
+          </div>
+
+          <div class="mb-6">
+            <div class="flex items-center gap-3 mb-1">
+              <span class="text-4xl font-bold text-primary">{{ displayPrice(product) | number: '1.2-2' }} DH</span>
+              @if (product.originalPrice) {
+                <span class="text-2xl text-muted-foreground line-through">{{ product.originalPrice | number: '1.2-2' }} DH</span>
+              }
+            </div>
+            @if (isB2B() && savingsAmount(product) > 0) {
+              <div class="text-sm text-green-600">{{ 'product.youSave' | t: { amount: savingsAmount(product) } }}</div>
+            }
+          </div>
+
+          <div class="mb-6">
+            @if (product.inStock) {
+              <span class="inline-block px-3 py-1 rounded bg-green-600 text-white text-sm">
+                {{ 'common.inStock' | t }} ({{ product.stockQuantity }})
+              </span>
+            } @else {
+              <span class="inline-block px-3 py-1 rounded bg-red-600 text-white text-sm">{{ 'product.outOfStock' | t }}</span>
+            }
+          </div>
+
+          <p class="text-muted-foreground mb-6">{{ product.description }}</p>
+
+          <div class="mb-6">
+            <label class="block mb-2">{{ 'product.quantity' | t }}</label>
+            <div class="flex items-center gap-3">
+              <button type="button" class="border rounded-md h-9 w-9" (click)="decrement()" [disabled]="!product.inStock">-</button>
+              <span class="text-xl font-semibold w-12 text-center">{{ quantity }}</span>
+              <button type="button" class="border rounded-md h-9 w-9" (click)="increment()" [disabled]="!product.inStock">+</button>
+            </div>
+          </div>
+
+          <div class="flex gap-4 mb-6">
+            <button
+              type="button"
+              class="flex-1 border rounded-md px-4 py-3 bg-primary text-white inline-flex items-center justify-center gap-2"
+              (click)="addToCart()"
+              [disabled]="!product.inStock"
+            >
+              <lucide-icon name="shopping-cart" [size]="18"></lucide-icon>
+              {{ 'product.addToCart' | t }}
+            </button>
+            <button type="button" class="border rounded-md px-4 py-3">
+              <lucide-icon name="heart" [size]="18"></lucide-icon>
+            </button>
+          </div>
+
+          <div class="border-t pt-6 space-y-4">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs">
+                <lucide-icon name="truck" [size]="16"></lucide-icon>
+              </span>
+              <div>
+                <div class="font-semibold">{{ 'product.freeShipping' | t }}</div>
+                <div class="text-sm text-muted-foreground">{{ 'product.freeShippingText' | t }}</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs">
+                <lucide-icon name="shield" [size]="16"></lucide-icon>
+              </span>
+              <div>
+                <div class="font-semibold">{{ 'product.qualityGuarantee' | t }}</div>
+                <div class="text-sm text-muted-foreground">{{ 'product.returnPolicy' | t }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-16">
+        <div class="border-b flex items-center gap-2">
+          <button
+            type="button"
+            class="px-4 py-2 text-sm"
+            [class.border-b-2]="selectedTab === 'description'"
+            [class.border-primary]="selectedTab === 'description'"
+            [class.font-semibold]="selectedTab === 'description'"
+            (click)="selectedTab = 'description'"
+          >
+            {{ 'product.descriptionTab' | t }}
+          </button>
+          <button
+            type="button"
+            class="px-4 py-2 text-sm"
+            [class.border-b-2]="selectedTab === 'specifications'"
+            [class.border-primary]="selectedTab === 'specifications'"
+            [class.font-semibold]="selectedTab === 'specifications'"
+            (click)="selectedTab = 'specifications'"
+          >
+            {{ 'product.specificationsTab' | t }}
+          </button>
+          <button
+            type="button"
+            class="px-4 py-2 text-sm"
+            [class.border-b-2]="selectedTab === 'reviews'"
+            [class.border-primary]="selectedTab === 'reviews'"
+            [class.font-semibold]="selectedTab === 'reviews'"
+            (click)="selectedTab = 'reviews'"
+          >
+            {{ 'product.reviewsTab' | t: { count: product.reviewCount } }}
+          </button>
+        </div>
+
+        @if (selectedTab === 'description') {
+          <div class="mt-6 prose max-w-none">
+            <p>{{ product.description }}</p>
+            <p class="mt-4">
+              This product is sourced from trusted manufacturers and comes with our quality guarantee.
+              Perfect for both business and individual use.
+            </p>
+          </div>
+        }
+
+        @if (selectedTab === 'specifications') {
+          <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            @for (spec of product.specifications; track spec.label + spec.value) {
+              <div class="flex justify-between border-b pb-2 gap-4">
+                <span class="font-semibold">{{ spec.label }}:</span>
+                <span class="text-muted-foreground text-right">{{ spec.value }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        @if (selectedTab === 'reviews') {
+          <div class="mt-6 space-y-6">
+            @for (review of reviewSamples(); track review.name) {
+              <div class="border rounded-lg p-6">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center font-bold text-primary">
+                    {{ review.initials }}
+                  </div>
+                    <div>
+                      <div class="font-semibold">{{ review.name }}</div>
+                      <div class="flex text-accent text-sm">
+                        @for (star of reviewStars(review.rating); track star) {
+                          <lucide-icon name="star" [size]="14" class="fill-current"></lucide-icon>
+                        }
+                        @for (star of [1, 2, 3, 4, 5].slice(review.rating); track $index) {
+                          <lucide-icon name="star" [size]="14"></lucide-icon>
+                        }
+                      </div>
+                    </div>
+                </div>
+                <p class="text-muted-foreground">{{ review.comment }}</p>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      @if (relatedProducts.length > 0) {
+        <div class="mt-16">
+          <h2 class="text-2xl font-bold mb-6">{{ 'product.relatedProducts' | t }}</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @for (item of relatedProducts; track item.id) {
+              <app-product-tile [product]="item"></app-product-tile>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

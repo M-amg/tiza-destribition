@@ -1,0 +1,106 @@
+<section class="form-head">
+  <a routerLink="/users" class="btn btn-ghost btn-sm">
+    <lucide-icon [img]="iconBack" [size]="16"></lucide-icon>
+    Back
+  </a>
+  <div>
+    <h1>{{ isEdit ? 'Edit User' : 'Add User' }}</h1>
+    <p>{{ isEdit ? 'Update admin user profile and role' : 'Create a new admin user account' }}</p>
+  </div>
+</section>
+
+<p class="form-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+<section class="panel empty-state" *ngIf="loadingInitial">
+  <h2>Loading user form...</h2>
+</section>
+
+<section class="panel empty-state" *ngIf="!loadingInitial && isEdit && !userFound">
+  <h2>User not found</h2>
+  <p>This user id does not exist.</p>
+  <a routerLink="/users" class="btn btn-primary">Return to users</a>
+</section>
+
+<form class="user-form" [formGroup]="form" (ngSubmit)="submit()" *ngIf="!loadingInitial && (!isEdit || userFound)">
+  <section class="form-grid">
+    <div class="main-col">
+      <article class="panel section-card">
+        <h2>Basic Information</h2>
+
+        <div class="field-stack">
+          <label for="user-name">Full Name *</label>
+          <input id="user-name" type="text" formControlName="name" placeholder="e.g., Jane Cooper" />
+        </div>
+
+        <div class="field-stack">
+          <label for="user-email">Email *</label>
+          <input id="user-email" type="email" formControlName="email" placeholder="name@company.com" />
+        </div>
+
+        <div class="field-stack">
+          <label for="user-password">Password {{ isEdit ? '(optional)' : '*' }}</label>
+          <input
+            id="user-password"
+            type="password"
+            formControlName="password"
+            [placeholder]="isEdit ? 'Leave blank to keep current password' : 'Min. 8 characters'"
+          />
+          <small *ngIf="isEdit">Set a new password only if you want to change it.</small>
+          <small *ngIf="!isEdit">Minimum 8 characters required.</small>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Role & Access</h2>
+
+        <div class="field-stack">
+          <label for="user-role">Role *</label>
+          <select id="user-role" formControlName="role">
+            <option *ngFor="let role of roles" [value]="role.key">{{ role.name }}</option>
+          </select>
+          <small>{{ selectedRoleDescription }}</small>
+        </div>
+      </article>
+    </div>
+
+    <aside class="side-col">
+      <article class="panel preview-card">
+        <h3>User Preview</h3>
+
+        <div class="preview-box">
+          <div class="icon-wrap"><lucide-icon [img]="iconUser" [size]="28"></lucide-icon></div>
+          <div class="name">{{ form.controls.name.value || 'New Admin User' }}</div>
+          <div class="email">{{ form.controls.email.value || 'name@company.com' }}</div>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h3>Status</h3>
+        <div class="status-row">
+          <div>
+            <strong>User Active</strong>
+            <small>{{ form.controls.statusActive.value ? 'Can access admin panel' : 'Login disabled' }}</small>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [attr.aria-checked]="form.controls.statusActive.value"
+            [class.on]="form.controls.statusActive.value"
+            (click)="toggleStatus(!form.controls.statusActive.value)"
+          >
+            <span></span>
+          </button>
+        </div>
+      </article>
+
+      <article class="panel section-card actions-card">
+        <button type="submit" class="btn btn-primary" [disabled]="submitting">
+          <lucide-icon [img]="iconSave" [size]="16"></lucide-icon>
+          {{ submitting ? 'Saving...' : (isEdit ? 'Update User' : 'Create User') }}
+        </button>
+        <a routerLink="/users" class="btn btn-secondary">Cancel</a>
+      </article>
+    </aside>
+  </section>
+</form>

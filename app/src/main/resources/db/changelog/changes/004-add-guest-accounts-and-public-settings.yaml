@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-01-add-guest-account-flag
+      author: codex
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: guest_account
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

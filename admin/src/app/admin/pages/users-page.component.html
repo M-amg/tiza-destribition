@@ -1,0 +1,145 @@
+<section class="page-head users-head">
+  <div>
+    <h1>Users &amp; Roles</h1>
+    <p>Manage admin users and their permissions</p>
+  </div>
+  <a routerLink="/users/new" class="btn btn-primary">
+    <lucide-icon [img]="iconPlus" [size]="16"></lucide-icon>
+    Add User
+  </a>
+</section>
+
+<section class="stats-grid">
+  <article class="panel stat-card">
+    <small>Total Users</small>
+    <strong>{{ totalUsers }}</strong>
+  </article>
+  <article class="panel stat-card">
+    <small>Active Users</small>
+    <strong class="success">{{ activeUsers }}</strong>
+  </article>
+  <article class="panel stat-card">
+    <small>Admins</small>
+    <strong class="primary">{{ adminUsersCount }}</strong>
+  </article>
+  <article class="panel stat-card">
+    <small>Staff</small>
+    <strong class="muted">{{ staffUsersCount }}</strong>
+  </article>
+</section>
+
+<section class="panel roles-panel">
+  <h3>Role Permissions</h3>
+  <div class="roles-grid">
+    <article class="role-card" *ngFor="let role of rolePermissions; trackBy: trackByRole">
+      <span [class]="roleCardClass(role.role)">{{ roleTitle(role) }}</span>
+      <p>{{ role.description }}</p>
+      <div class="permissions-list">
+        <span *ngFor="let permission of role.permissions | slice : 0 : 3">
+          <i></i>
+          {{ formatPermission(permission) }}
+        </span>
+        <small *ngIf="role.permissions.length > 3">+{{ role.permissions.length - 3 }} more</small>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="panel filters-panel">
+  <div class="filters-grid">
+    <div class="field field-search">
+      <label for="user-search">Search</label>
+      <div class="search-wrap">
+        <lucide-icon class="search-icon" [img]="iconSearch" [size]="16"></lucide-icon>
+        <input id="user-search" type="search" placeholder="Search users..." [(ngModel)]="searchTerm" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="role-filter">Role</label>
+      <select id="role-filter" [(ngModel)]="roleFilter">
+        <option value="all">All Roles</option>
+        <option value="super_admin">Super Admin</option>
+        <option value="admin">Admin</option>
+        <option value="manager">Manager</option>
+        <option value="staff">Staff</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="status-filter">Status</label>
+      <select id="status-filter" [(ngModel)]="statusFilter">
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<section class="panel users-table-panel">
+  <p class="message error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="message muted" *ngIf="loading">Loading users...</p>
+
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Last Login</th>
+          <th>Joined</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="!loading && filteredUsers.length === 0">
+          <td colspan="7" class="empty-cell">No users found</td>
+        </tr>
+
+        <tr *ngFor="let user of filteredUsers; trackBy: trackById">
+          <td>
+            <div class="user-cell">
+              <div class="avatar">{{ user.name.charAt(0) }}</div>
+              <div>
+                <strong>{{ user.name }}</strong>
+                <small>{{ rolePermissionsCount(user) }} permissions</small>
+              </div>
+            </div>
+          </td>
+          <td>{{ user.email }}</td>
+          <td><span [class]="roleBadgeClass[user.role]">{{ roleLabel(user.role) }}</span></td>
+          <td><span [class]="statusBadgeClass[user.status]">{{ user.status }}</span></td>
+          <td>{{ user.lastLogin }}</td>
+          <td>{{ user.createdDate }}</td>
+          <td>
+            <div class="actions">
+              <a
+                *ngIf="!isEditDisabled(user)"
+                [routerLink]="['/users', user.id, 'edit']"
+                class="btn btn-ghost btn-sm btn-icon action-btn"
+                aria-label="Edit user"
+              >
+                <lucide-icon [img]="iconEdit" [size]="16"></lucide-icon>
+              </a>
+              <button *ngIf="isEditDisabled(user)" type="button" class="btn btn-ghost btn-sm btn-icon action-btn" disabled aria-label="Edit user">
+                <lucide-icon [img]="iconEdit" [size]="16"></lucide-icon>
+              </button>
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm btn-icon action-btn btn-danger-ghost"
+                [disabled]="isDeleteDisabled(user)"
+                (click)="toggleUserStatus(user)"
+                aria-label="Delete user"
+              >
+                <lucide-icon [img]="iconDelete" [size]="16"></lucide-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

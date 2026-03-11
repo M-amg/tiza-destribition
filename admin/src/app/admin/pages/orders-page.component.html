@@ -1,0 +1,132 @@
+<section class="page-head">
+  <div>
+    <h1>Orders</h1>
+    <p>Manage customer orders and shipments.</p>
+  </div>
+</section>
+
+<section class="panel filters-panel">
+  <div class="filters-grid">
+    <div class="field field-search">
+      <label for="orders-search">Search</label>
+      <div class="search-wrap">
+        <lucide-icon class="search-icon" [img]="iconSearch" [size]="16"></lucide-icon>
+        <input
+          id="orders-search"
+          type="search"
+          placeholder="Search orders, customers..."
+          [(ngModel)]="searchTerm"
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="orders-status">Order Status</label>
+      <select id="orders-status" [(ngModel)]="statusFilter">
+        <option value="all">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="processing">Processing</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="orders-payment">Payment Status</label>
+      <select id="orders-payment" [(ngModel)]="paymentFilter">
+        <option value="all">All</option>
+        <option value="paid">Paid</option>
+        <option value="pending">Pending</option>
+        <option value="failed">Failed</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="orders-customer-type">Customer Type</label>
+      <select id="orders-customer-type" [(ngModel)]="customerTypeFilter">
+        <option value="all">All</option>
+        <option value="B2B">B2B</option>
+        <option value="B2C">B2C</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<section class="stats-grid">
+  <article class="panel stat-card"><small>All Orders</small><strong>{{ allOrdersCount }}</strong></article>
+  <article class="panel stat-card"><small>Pending</small><strong class="warning">{{ pendingCount }}</strong></article>
+  <article class="panel stat-card"><small>Processing</small><strong class="brand">{{ processingCount }}</strong></article>
+  <article class="panel stat-card"><small>Shipped</small><strong class="purple">{{ shippedCount }}</strong></article>
+  <article class="panel stat-card"><small>Delivered</small><strong class="success">{{ deliveredCount }}</strong></article>
+</section>
+
+<section class="panel empty-state" *ngIf="loading">
+  <p>Loading orders...</p>
+</section>
+
+<section class="panel empty-state" *ngIf="!loading && errorMessage">
+  <p class="form-error">{{ errorMessage }}</p>
+</section>
+
+<section class="panel orders-table-panel" *ngIf="!loading && !errorMessage">
+  <div class="list-meta">
+    <p>Showing {{ filteredOrders.length }} of {{ orders.length }} orders</p>
+  </div>
+
+  <div class="table-scroll">
+    <table class="data-table orders-table">
+      <thead>
+        <tr>
+          <th>Order Number</th>
+          <th>Customer</th>
+          <th>Type</th>
+          <th>Date</th>
+          <th>Items</th>
+          <th>Total</th>
+          <th>Coupon</th>
+          <th>Payment</th>
+          <th>Status</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="filteredOrders.length === 0">
+          <td colspan="10" class="empty-cell">No orders found</td>
+        </tr>
+        <tr *ngFor="let order of filteredOrders; trackBy: trackById">
+          <td class="semi">{{ order.orderNumber }}</td>
+          <td>
+            <div>
+              <strong>{{ order.customerName }}</strong>
+              <small>{{ order.customerEmail }}</small>
+            </div>
+          </td>
+          <td>
+            <span class="chip" [class.chip-brand]="order.customerType === 'B2B'">{{ order.customerType }}</span>
+          </td>
+          <td>{{ order.date }}</td>
+          <td>{{ order.items.length }}</td>
+          <td class="semi">{{ order.total | number : '1.2-2' }} DH</td>
+          <td>
+            <div *ngIf="order.couponCode; else noCoupon" class="coupon-cell">
+              <span class="chip chip-success">{{ order.couponCode }}</span>
+              <small *ngIf="order.couponDiscount">-{{ order.couponDiscount | number : '1.2-2' }} DH</small>
+            </div>
+            <ng-template #noCoupon><span class="muted">-</span></ng-template>
+          </td>
+          <td><span [class]="paymentChipClass[order.paymentStatus]">{{ order.paymentStatus }}</span></td>
+          <td><span [class]="statusChipClass[order.status]">{{ order.status }}</span></td>
+          <td>
+            <div class="actions">
+              <a [routerLink]="['/orders', order.id]" class="btn btn-ghost btn-sm">
+                <lucide-icon [img]="iconEye" [size]="16"></lucide-icon>
+                View
+              </a>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

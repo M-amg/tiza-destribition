@@ -1,0 +1,75 @@
+# Workspace dependencies and package manager output
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Frontend build output and caches
+**/dist/
+**/coverage/
+**/tmp/
+**/out-tsc/
+**/.angular/cache/
+**/.expo/
+**/web-build/
+**/.metro-health-check*
+**/*.tsbuildinfo
+
+# Mobile generated/native artifacts
+Mobile/android/
+Mobile/ios/
+Mobile/expo-env.d.ts
+**/.kotlin/
+
+# Java/Maven build output
+**/target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+**/build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IDE and editor files
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+.project
+.classpath
+.settings/
+*.iml
+*.iws
+*.ipr
+*.sublime-workspace
+*.launch
+
+# OS and misc local files
+.DS_Store
+Thumbs.db
+.sass-cache/
+connect.lock
+libpeerconnection.log
+testem.log
+*.orig.*
+*.pem
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Repo-specific local data and generated assets
+/backups/
+/data-import/
+/app/uploads/
+/screencapture-*.png

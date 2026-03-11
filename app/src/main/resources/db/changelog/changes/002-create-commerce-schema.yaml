@@ -1,0 +1,1501 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-01-create-categories
+      author: codex
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: slug
+                  type: VARCHAR(160)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: VARCHAR(500)
+              - column:
+                  name: image_url
+                  type: VARCHAR(500)
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: parent_id
+                  type: UUID
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: categories
+            baseColumnNames: parent_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_categories_parent
+        - createIndex:
+            tableName: categories
+            indexName: idx_categories_parent_id
+            columns:
+              - column:
+                  name: parent_id
+
+  - changeSet:
+      id: 002-02-create-products
+      author: codex
+      changes:
+        - createTable:
+            tableName: products
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(180)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: slug
+                  type: VARCHAR(220)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: VARCHAR(4000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: short_description
+                  type: VARCHAR(1000)
+              - column:
+                  name: brand
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sku
+                  type: VARCHAR(80)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: barcode
+                  type: VARCHAR(120)
+              - column:
+                  name: cost_price
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: b2c_price
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: b2b_price
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: original_price
+                  type: DECIMAL(12,2)
+              - column:
+                  name: discount_type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount_value
+                  type: DECIMAL(12,2)
+              - column:
+                  name: discount_applies_to
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: min_b2b_quantity
+                  type: INT
+              - column:
+                  name: stock_quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: minimum_stock_level
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: in_stock
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rating
+                  type: DECIMAL(3,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: review_count
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_featured
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_new
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: products
+            baseColumnNames: category_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: fk_products_category
+        - createIndex:
+            tableName: products
+            indexName: idx_products_category_id
+            columns:
+              - column:
+                  name: category_id
+        - createIndex:
+            tableName: products
+            indexName: idx_products_status
+            columns:
+              - column:
+                  name: status
+
+  - changeSet:
+      id: 002-03-create-product-images
+      author: codex
+      changes:
+        - createTable:
+            tableName: product_images
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image_url
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_main
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: product_images
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_product_images_product
+        - createIndex:
+            tableName: product_images
+            indexName: idx_product_images_product_id
+            columns:
+              - column:
+                  name: product_id
+
+  - changeSet:
+      id: 002-04-create-product-specifications
+      author: codex
+      changes:
+        - createTable:
+            tableName: product_specifications
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: label
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: spec_value
+                  type: VARCHAR(300)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: INT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: product_specifications
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_product_specifications_product
+        - createIndex:
+            tableName: product_specifications
+            indexName: idx_product_specifications_product_id
+            columns:
+              - column:
+                  name: product_id
+
+  - changeSet:
+      id: 002-05-create-coupons
+      author: codex
+      changes:
+        - createTable:
+            tableName: coupons
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: VARCHAR(60)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: VARCHAR(160)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(500)
+              - column:
+                  name: discount_type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount_value
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_discount_cap
+                  type: DECIMAL(12,2)
+              - column:
+                  name: segment
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: applicability
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: min_order_amount
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: usage_limit_total
+                  type: INT
+              - column:
+                  name: usage_limit_per_customer
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: used_count
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_at
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by_user_id
+                  type: UUID
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: coupons
+            baseColumnNames: created_by_user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_coupons_created_by_user
+        - createIndex:
+            tableName: coupons
+            indexName: idx_coupons_status
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            tableName: coupons
+            indexName: idx_coupons_date_range
+            columns:
+              - column:
+                  name: start_at
+              - column:
+                  name: end_at
+
+  - changeSet:
+      id: 002-06-create-coupon-categories
+      author: codex
+      changes:
+        - createTable:
+            tableName: coupon_categories
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: coupon_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: coupon_categories
+            baseColumnNames: coupon_id
+            referencedTableName: coupons
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_coupon_categories_coupon
+        - addForeignKeyConstraint:
+            baseTableName: coupon_categories
+            baseColumnNames: category_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_coupon_categories_category
+        - addUniqueConstraint:
+            tableName: coupon_categories
+            columnNames: coupon_id, category_id
+            constraintName: uk_coupon_categories_coupon_category
+
+  - changeSet:
+      id: 002-07-create-coupon-products
+      author: codex
+      changes:
+        - createTable:
+            tableName: coupon_products
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: coupon_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: coupon_products
+            baseColumnNames: coupon_id
+            referencedTableName: coupons
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_coupon_products_coupon
+        - addForeignKeyConstraint:
+            baseTableName: coupon_products
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_coupon_products_product
+        - addUniqueConstraint:
+            tableName: coupon_products
+            columnNames: coupon_id, product_id
+            constraintName: uk_coupon_products_coupon_product
+
+  - changeSet:
+      id: 002-08-create-customer-addresses
+      author: codex
+      changes:
+        - createTable:
+            tableName: customer_addresses
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: label
+                  type: VARCHAR(80)
+              - column:
+                  name: recipient_name
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: VARCHAR(30)
+              - column:
+                  name: address_line1
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address_line2
+                  type: VARCHAR(255)
+              - column:
+                  name: city
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: state
+                  type: VARCHAR(120)
+              - column:
+                  name: zip_code
+                  type: VARCHAR(30)
+              - column:
+                  name: country
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_default_shipping
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_default_billing
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: customer_addresses
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_customer_addresses_user
+        - createIndex:
+            tableName: customer_addresses
+            indexName: idx_customer_addresses_user_id
+            columns:
+              - column:
+                  name: user_id
+
+  - changeSet:
+      id: 002-09-create-carts
+      author: codex
+      changes:
+        - createTable:
+            tableName: carts
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: coupon_id
+                  type: UUID
+              - column:
+                  name: subtotal
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount_amount
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: shipping_amount
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tax_amount
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_amount
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: carts
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_carts_user
+        - addForeignKeyConstraint:
+            baseTableName: carts
+            baseColumnNames: coupon_id
+            referencedTableName: coupons
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_carts_coupon
+        - createIndex:
+            tableName: carts
+            indexName: idx_carts_user_status
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: status
+
+  - changeSet:
+      id: 002-10-create-cart-items
+      author: codex
+      changes:
+        - createTable:
+            tableName: cart_items
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: cart_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: unit_price
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: line_total
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: cart_items
+            baseColumnNames: cart_id
+            referencedTableName: carts
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_cart_items_cart
+        - addForeignKeyConstraint:
+            baseTableName: cart_items
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_cart_items_product
+        - addUniqueConstraint:
+            tableName: cart_items
+            columnNames: cart_id, product_id
+            constraintName: uk_cart_items_cart_product
+        - createIndex:
+            tableName: cart_items
+            indexName: idx_cart_items_cart_id
+            columns:
+              - column:
+                  name: cart_id
+
+  - changeSet:
+      id: 002-11-create-orders
+      author: codex
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_number
+                  type: VARCHAR(40)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_type
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_method
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: coupon_id
+                  type: UUID
+              - column:
+                  name: coupon_code_snapshot
+                  type: VARCHAR(60)
+              - column:
+                  name: coupon_discount
+                  type: DECIMAL(12,2)
+              - column:
+                  name: subtotal
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: shipping_amount
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tax_amount
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_amount
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notes
+                  type: VARCHAR(1000)
+              - column:
+                  name: placed_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: confirmed_at
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: shipped_at
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: delivered_at
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: cancelled_at
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: customer_address_id
+                  type: UUID
+              - column:
+                  name: shipping_recipient_name
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: shipping_phone
+                  type: VARCHAR(30)
+              - column:
+                  name: shipping_email
+                  type: VARCHAR(190)
+              - column:
+                  name: shipping_address_line1
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: shipping_address_line2
+                  type: VARCHAR(255)
+              - column:
+                  name: shipping_city
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: shipping_state
+                  type: VARCHAR(120)
+              - column:
+                  name: shipping_zip_code
+                  type: VARCHAR(30)
+              - column:
+                  name: shipping_country
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_orders_user
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: coupon_id
+            referencedTableName: coupons
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_orders_coupon
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: customer_address_id
+            referencedTableName: customer_addresses
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_orders_customer_address
+        - createIndex:
+            tableName: orders
+            indexName: idx_orders_user_id
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            tableName: orders
+            indexName: idx_orders_status
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            tableName: orders
+            indexName: idx_orders_placed_at
+            columns:
+              - column:
+                  name: placed_at
+
+  - changeSet:
+      id: 002-12-create-order-items
+      author: codex
+      changes:
+        - createTable:
+            tableName: order_items
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_name_snapshot
+                  type: VARCHAR(180)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_sku_snapshot
+                  type: VARCHAR(80)
+              - column:
+                  name: unit_price
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: line_total
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: order_items
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_order_items_order
+        - addForeignKeyConstraint:
+            baseTableName: order_items
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_order_items_product
+        - createIndex:
+            tableName: order_items
+            indexName: idx_order_items_order_id
+            columns:
+              - column:
+                  name: order_id
+
+  - changeSet:
+      id: 002-13-create-order-status-history
+      author: codex
+      changes:
+        - createTable:
+            tableName: order_status_history
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: changed_by_user_id
+                  type: UUID
+              - column:
+                  name: note
+                  type: VARCHAR(500)
+              - column:
+                  name: changed_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: order_status_history
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_order_status_history_order
+        - addForeignKeyConstraint:
+            baseTableName: order_status_history
+            baseColumnNames: changed_by_user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_order_status_history_changed_by_user
+        - createIndex:
+            tableName: order_status_history
+            indexName: idx_order_status_history_order_id
+            columns:
+              - column:
+                  name: order_id
+
+  - changeSet:
+      id: 002-14-create-coupon-redemptions
+      author: codex
+      changes:
+        - createTable:
+            tableName: coupon_redemptions
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: coupon_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount_amount
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: redeemed_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: coupon_redemptions
+            baseColumnNames: coupon_id
+            referencedTableName: coupons
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_coupon_redemptions_coupon
+        - addForeignKeyConstraint:
+            baseTableName: coupon_redemptions
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_coupon_redemptions_user
+        - addForeignKeyConstraint:
+            baseTableName: coupon_redemptions
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_coupon_redemptions_order
+        - addUniqueConstraint:
+            tableName: coupon_redemptions
+            columnNames: coupon_id, user_id, order_id
+            constraintName: uk_coupon_redemptions_coupon_user_order
+        - createIndex:
+            tableName: coupon_redemptions
+            indexName: idx_coupon_redemptions_coupon_id
+            columns:
+              - column:
+                  name: coupon_id
+
+  - changeSet:
+      id: 002-15-create-stock-movements
+      author: codex
+      changes:
+        - createTable:
+            tableName: stock_movements
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: change_type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity_change
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: previous_quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: new_quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reference_type
+                  type: VARCHAR(30)
+              - column:
+                  name: reference_id
+                  type: UUID
+              - column:
+                  name: note
+                  type: VARCHAR(500)
+              - column:
+                  name: changed_by_user_id
+                  type: UUID
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: stock_movements
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_stock_movements_product
+        - addForeignKeyConstraint:
+            baseTableName: stock_movements
+            baseColumnNames: changed_by_user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_stock_movements_changed_by_user
+        - createIndex:
+            tableName: stock_movements
+            indexName: idx_stock_movements_product_id
+            columns:
+              - column:
+                  name: product_id
+        - createIndex:
+            tableName: stock_movements
+            indexName: idx_stock_movements_created_at
+            columns:
+              - column:
+                  name: created_at
+
+  - changeSet:
+      id: 002-16-create-price-change-history
+      author: codex
+      changes:
+        - createTable:
+            tableName: price_change_history
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price_type
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: old_price
+                  type: DECIMAL(12,2)
+              - column:
+                  name: new_price
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reason
+                  type: VARCHAR(500)
+              - column:
+                  name: changed_by_user_id
+                  type: UUID
+              - column:
+                  name: changed_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: price_change_history
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_price_change_history_product
+        - addForeignKeyConstraint:
+            baseTableName: price_change_history
+            baseColumnNames: changed_by_user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_price_change_history_changed_by_user
+        - createIndex:
+            tableName: price_change_history
+            indexName: idx_price_change_history_product_id
+            columns:
+              - column:
+                  name: product_id
+
+  - changeSet:
+      id: 002-17-create-invoices
+      author: codex
+      changes:
+        - createTable:
+            tableName: invoices
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: invoice_number
+                  type: VARCHAR(40)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issued_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: due_at
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: paid_at
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: subtotal
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: shipping_amount
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tax_amount
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_amount
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: pdf_url
+                  type: VARCHAR(500)
+              - column:
+                  name: notes
+                  type: VARCHAR(1000)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: invoices
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            onDelete: CASCADE
+            constraintName: fk_invoices_order
+        - createIndex:
+            tableName: invoices
+            indexName: idx_invoices_status
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            tableName: invoices
+            indexName: idx_invoices_issued_at
+            columns:
+              - column:
+                  name: issued_at
+
+  - changeSet:
+      id: 002-18-create-store-settings
+      author: codex
+      changes:
+        - createTable:
+            tableName: store_settings
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: setting_key
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: value_type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value_text
+                  type: VARCHAR(4000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(500)
+              - column:
+                  name: is_public
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: store_settings
+            indexName: idx_store_settings_is_public
+            columns:
+              - column:
+                  name: is_public
+
+  - changeSet:
+      id: 002-19-create-contact-messages
+      author: codex
+      changes:
+        - createTable:
+            tableName: contact_messages
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: full_name
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(190)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: VARCHAR(30)
+              - column:
+                  name: subject
+                  type: VARCHAR(180)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: message
+                  type: VARCHAR(5000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: handled_by_user_id
+                  type: UUID
+              - column:
+                  name: handled_at
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: contact_messages
+            baseColumnNames: handled_by_user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: SET NULL
+            constraintName: fk_contact_messages_handled_by_user
+        - createIndex:
+            tableName: contact_messages
+            indexName: idx_contact_messages_status
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            tableName: contact_messages
+            indexName: idx_contact_messages_created_at
+            columns:
+              - column:
+                  name: created_at

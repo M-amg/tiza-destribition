@@ -1,0 +1,354 @@
+<header class="fixed inset-x-0 top-0 z-50 border-b border-slate-200 bg-white shadow-[0_10px_35px_rgb(15_23_42_/_0.08)]">
+  <div class="bg-primary text-primary-foreground">
+    <div class="container mx-auto flex min-h-10 items-center justify-between gap-4 px-4 text-xs sm:text-sm">
+      <div class="flex min-w-0 items-center gap-6 overflow-hidden whitespace-nowrap">
+        <span class="inline-flex items-center gap-1.5">
+          <lucide-icon name="phone" [size]="14"></lucide-icon>
+          {{ storeInfo().supportPhone || storeInfo().phone }}
+        </span>
+        <span class="hidden md:inline-flex items-center gap-1.5">
+          <lucide-icon name="mail" [size]="14"></lucide-icon>
+          {{ storeInfo().supportEmail || storeInfo().email }}
+        </span>
+      </div>
+      <div class="hidden md:flex items-center gap-4">
+        <a routerLink="/track-order" class="hover:text-white/80 transition-colors">Track Order</a>
+        <span>|</span>
+        <a routerLink="/contact" class="hover:text-white/80 transition-colors">Help</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-b border-slate-200 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="grid h-20 grid-cols-[auto_auto] items-center gap-4 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-6">
+        <a routerLink="/" class="site-header__brand flex shrink-0 items-center gap-2">
+          <span class="site-header__brand-mark">
+            @if (storeInfo().logoUrl) {
+              <img [src]="storeInfo().logoUrl!" [alt]="storeInfo().name" class="h-7 w-7 object-contain" />
+            } @else {
+              {{ brandInitial() }}
+            }
+          </span>
+          <span class="site-header__brand-wordmark">{{ brandLabel() }}</span>
+        </a>
+
+        <form class="hidden md:block md:w-full md:max-w-2xl md:justify-self-center" (ngSubmit)="onSearch()">
+          <div class="relative w-full">
+            <input
+              type="search"
+              [(ngModel)]="searchTerm"
+              name="search"
+              [placeholder]="'header.searchPlaceholder' | t"
+              class="h-12 rounded-lg border-2 border-slate-200 bg-white pl-4 pr-14 text-sm shadow-none focus-visible:border-primary focus-visible:ring-primary/15"
+            />
+            <button
+              type="submit"
+              class="absolute right-1 top-1 flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white hover:bg-[#002d62]"
+              aria-label="Search products"
+            >
+              <lucide-icon name="search" [size]="18"></lucide-icon>
+            </button>
+          </div>
+        </form>
+
+        <div class="flex shrink-0 items-center justify-self-end gap-2 md:gap-3">
+          <a
+            [routerLink]="isLoggedIn() ? accountRoute() : '/login'"
+            class="market-header__icon-link hidden md:flex"
+            aria-label="Account"
+          >
+            <lucide-icon name="user" [size]="22"></lucide-icon>
+            <span class="market-header__action-label">{{ isLoggedIn() ? 'Profile' : 'Account' }}</span>
+          </a>
+
+          <a routerLink="/shop" class="market-header__icon-link hidden md:flex" aria-label="Wishlist">
+            <lucide-icon name="heart" [size]="22"></lucide-icon>
+            <span class="market-header__action-label">Wishlist</span>
+          </a>
+
+          <button type="button" class="market-header__icon-link relative" (click)="openCartDrawer()" aria-label="View cart">
+            <lucide-icon name="shopping-cart" [size]="22"></lucide-icon>
+            <span class="market-header__action-label">Cart</span>
+            @if (cartCount() > 0) {
+              <span class="absolute right-0 top-0 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[0.7rem] font-bold text-white">
+                {{ cartCount() }}
+              </span>
+            }
+          </button>
+
+          <button type="button" class="inline-flex site-header__menu-button md:hidden" (click)="toggleMobileMenu()">
+            <lucide-icon name="menu" [size]="18"></lucide-icon>
+          </button>
+        </div>
+      </div>
+
+      <form class="site-header__mobile-search pb-3 md:hidden" (ngSubmit)="onSearch()">
+        <div class="relative">
+          <input
+            type="search"
+            [(ngModel)]="searchTerm"
+            name="mobileSearch"
+            [placeholder]="'header.searchPlaceholder' | t"
+            class="h-11 rounded-xl border border-slate-200 bg-slate-50 pl-4 pr-12 text-sm"
+          />
+          <button
+            type="submit"
+            class="absolute right-1 top-1 flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white"
+            aria-label="Search products"
+          >
+            <lucide-icon name="search" [size]="16"></lucide-icon>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="hidden border-b border-slate-200 bg-slate-50 md:block">
+    <div class="container mx-auto px-4">
+      <nav class="flex h-12 items-center justify-center gap-8 overflow-x-auto text-sm font-medium text-slate-700">
+        <a routerLink="/shop" class="whitespace-nowrap transition-colors hover:text-primary">All Categories</a>
+        @for (category of topCategories(); track category.id) {
+          <a
+            [routerLink]="['/shop']"
+            [queryParams]="{ category: category.slug }"
+            class="whitespace-nowrap transition-colors hover:text-primary"
+          >
+            {{ category.name }}
+          </a>
+        }
+        <a routerLink="/shop" class="whitespace-nowrap font-semibold text-red-600 transition-colors hover:text-red-700">
+          Special Offers
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  @if (mobileOpen()) {
+    <div class="border-b border-slate-200 bg-white px-4 py-4 md:hidden">
+      <nav class="flex flex-col gap-2">
+        <div class="relative mb-2">
+          <button type="button" class="language-dropdown__mobile-trigger" (click)="toggleMobileLanguageMenu()">
+            <span>{{ 'header.language' | t }}</span>
+            <span class="language-dropdown__mobile-value">
+              <img [src]="currentLanguage().flagSrc" [alt]="currentLanguage().label" class="language-dropdown__flag" />
+              <span>{{ currentLanguage().label }}</span>
+            </span>
+            <lucide-icon name="chevron-down" [size]="16" class="language-dropdown__chevron"></lucide-icon>
+          </button>
+          @if (mobileLanguageMenuOpen()) {
+            <div class="language-dropdown__mobile-menu">
+              @for (language of languageOptions; track language.code) {
+                <button
+                  type="button"
+                  class="language-dropdown__option"
+                  [class.language-dropdown__option--active]="language.code === currentLanguage().code"
+                  (click)="setLanguage(language.code)"
+                >
+                  <img [src]="language.flagSrc" [alt]="language.label" class="language-dropdown__flag" />
+                  <span class="language-dropdown__name">{{ language.name }}</span>
+                  <span class="language-dropdown__code">{{ language.label }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <a routerLink="/" class="market-header__mobile-link" (click)="closeMobileMenu()">Home</a>
+        <a routerLink="/shop" class="market-header__mobile-link" (click)="closeMobileMenu()">{{ 'common.shop' | t }}</a>
+        <a routerLink="/track-order" class="market-header__mobile-link" (click)="closeMobileMenu()">Track Order</a>
+        <a routerLink="/contact" class="market-header__mobile-link" (click)="closeMobileMenu()">{{ 'common.contact' | t }}</a>
+
+        @if (topCategories().length > 0) {
+          <div class="mt-3 border-t border-slate-200 pt-3">
+            <p class="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Top categories</p>
+            <div class="flex flex-wrap gap-2">
+              @for (category of topCategories(); track category.id) {
+                <a
+                  [routerLink]="['/shop']"
+                  [queryParams]="{ category: category.slug }"
+                  class="rounded-full border border-slate-200 px-3 py-1.5 text-sm text-slate-700"
+                  (click)="closeMobileMenu()"
+                >
+                  {{ category.name }}
+                </a>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="mt-3 border-t border-slate-200 pt-3">
+          @if (!isLoggedIn()) {
+            <a routerLink="/login" class="market-header__mobile-link" (click)="closeMobileMenu()">Account</a>
+          }
+          @if (isLoggedIn()) {
+            <a [routerLink]="accountRoute()" class="market-header__mobile-link" (click)="closeMobileMenu()">Profile</a>
+            <button type="button" class="market-header__mobile-link text-left text-red-600" (click)="logout(); closeMobileMenu()">Logout</button>
+          }
+        </div>
+      </nav>
+    </div>
+  }
+</header>
+
+@if (cartDrawerOpen()) {
+  <div class="mini-cart-overlay" (click)="closeCartDrawer()"></div>
+  <aside class="mini-cart-panel" role="dialog" aria-modal="true" aria-label="Mini cart">
+    <div class="mini-cart-panel__header">
+      <div>
+        <h2 class="mini-cart-panel__title">{{ 'cart.shoppingCart' | t }}</h2>
+        @if (cartCount() > 0) {
+          <p class="mini-cart-panel__subtitle">{{ cartCount() }} {{ 'common.items' | t }}</p>
+        }
+      </div>
+      <button type="button" class="mini-cart-panel__close" (click)="closeCartDrawer()">
+        <lucide-icon name="x" [size]="18"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="mini-cart-panel__body">
+      @if (cartDrawerLoading()) {
+        <div class="mini-cart-empty">
+          <div class="mini-cart-empty__icon">
+            <lucide-icon name="shopping-cart" [size]="28"></lucide-icon>
+          </div>
+          <p class="mini-cart-empty__title">{{ 'common.loadingCart' | t }}</p>
+        </div>
+      } @else if (cartItems().length > 0) {
+        <div class="mini-cart-items">
+          @for (item of cartItems(); track item.id) {
+            <article class="mini-cart-item">
+              <button type="button" class="mini-cart-item__media" (click)="viewProduct(item)">
+                @if (item.imageUrl) {
+                  <img [src]="item.imageUrl" [alt]="item.productName" class="mini-cart-item__image" />
+                } @else {
+                  <span class="mini-cart-item__placeholder">
+                    <lucide-icon name="package" [size]="22"></lucide-icon>
+                  </span>
+                }
+              </button>
+
+              <div class="mini-cart-item__content">
+                <div class="mini-cart-item__top">
+                  <button type="button" class="mini-cart-item__name" (click)="viewProduct(item)">
+                    {{ item.productName }}
+                  </button>
+                  <button type="button" class="mini-cart-item__remove" (click)="removeCartItem(item.id)">
+                    {{ 'cart.removeShort' | t }}
+                  </button>
+                </div>
+
+                <div class="mini-cart-item__meta">
+                  <p class="mini-cart-item__price">{{ item.unitPrice | number: '1.2-2' }} DH</p>
+                  <span class="mini-cart-item__unit">{{ item.quantity }} x article</span>
+                </div>
+
+                <div class="mini-cart-item__actions">
+                  <div class="mini-cart-qty">
+                    <button type="button" (click)="updateCartQuantity(item, item.quantity - 1)">
+                      <lucide-icon name="minus" [size]="15"></lucide-icon>
+                    </button>
+                    <span>{{ item.quantity }}</span>
+                    <button type="button" (click)="updateCartQuantity(item, item.quantity + 1)">
+                      <lucide-icon name="plus" [size]="15"></lucide-icon>
+                    </button>
+                  </div>
+
+                  <strong class="mini-cart-item__line-total">{{ item.lineTotal | number: '1.2-2' }} DH</strong>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="mini-cart-empty">
+          <div class="mini-cart-empty__icon">
+            <lucide-icon name="shopping-cart" [size]="28"></lucide-icon>
+          </div>
+          <p class="mini-cart-empty__title">{{ 'cart.emptyTitle' | t }}</p>
+          <p class="mini-cart-empty__text">{{ 'cart.emptyText' | t }}</p>
+          <button type="button" class="mini-cart-empty__button" (click)="closeCartDrawer()">
+            {{ 'common.continueShopping' | t }}
+          </button>
+        </div>
+      }
+    </div>
+
+    @if (cartItems().length > 0) {
+      <div class="mini-cart-panel__footer">
+        <button type="button" class="mini-cart-coupon__toggle" (click)="toggleCoupon()">
+          <span>{{ 'cart.couponCode' | t }}</span>
+          <lucide-icon
+            name="chevron-down"
+            [size]="16"
+            class="mini-cart-coupon__chevron"
+            [class.mini-cart-coupon__chevron--open]="couponOpen()"
+          ></lucide-icon>
+        </button>
+
+        @if (couponOpen()) {
+          <div class="mini-cart-coupon__body">
+            @if (cart()?.couponCode) {
+              <div class="mini-cart-coupon__applied">
+                <span>{{ 'cart.appliedCoupon' | t }} {{ cart()?.couponCode }}</span>
+                <button type="button" (click)="removeCouponFromDrawer()">{{ 'cart.removeCoupon' | t }}</button>
+              </div>
+            } @else {
+              <div class="mini-cart-coupon__form">
+                <label class="flex flex-col gap-2">
+                  <span class="text-[0.75rem] font-bold tracking-[0.01em] text-slate-600">{{ 'cart.couponCode' | t }}</span>
+                  <div class="grid grid-cols-[minmax(0,1fr)_auto] gap-2.5 rounded-2xl border border-slate-200 bg-white p-2 max-sm:grid-cols-1">
+                    <input
+                      type="text"
+                      [(ngModel)]="couponCode"
+                      name="miniCartCoupon"
+                      [placeholder]="'cart.couponCode' | t"
+                      class="min-w-0 h-10 rounded-xl border-0 bg-slate-50 text-sm"
+                    />
+                    <button
+                      type="button"
+                      class="inline-flex h-10 items-center justify-center whitespace-nowrap px-4 text-sm"
+                      (click)="applyCouponFromDrawer()"
+                    >
+                      {{ 'cart.applyShort' | t }}
+                    </button>
+                  </div>
+                </label>
+              </div>
+            }
+          </div>
+        }
+
+        @if (cartErrorMessage) {
+          <p class="mini-cart-panel__error">{{ cartErrorMessage }}</p>
+        }
+
+        <div class="mini-cart-panel__summary">
+          <div class="mini-cart-panel__summary-labels">
+            <span>{{ 'common.total' | t }}</span>
+            <small>{{ cartCount() }} {{ 'common.items' | t }}</small>
+          </div>
+          <strong>{{ cart()?.totalAmount | number: '1.2-2' }} DH</strong>
+        </div>
+
+        <button type="button" class="mini-cart-panel__cta" (click)="viewCart()">
+          <span>{{ 'cart.viewCartShort' | t }}</span>
+          <lucide-icon name="arrow-right" [size]="16"></lucide-icon>
+        </button>
+      </div>
+    }
+  </aside>
+}
+
+@if (cartCount() > 0 && !cartDrawerOpen()) {
+  <button type="button" class="mobile-cart-bar" (click)="openCartDrawer()">
+    <div class="mobile-cart-bar__summary">
+      <span class="mobile-cart-bar__items">{{ cartCount() }} {{ 'common.items' | t }}</span>
+      <strong class="mobile-cart-bar__total">{{ cart()?.totalAmount | number: '1.2-2' }} DH</strong>
+    </div>
+    <span class="mobile-cart-bar__cta">
+      {{ 'cart.viewCartShort' | t }}
+      <lucide-icon name="arrow-up" [size]="15"></lucide-icon>
+    </span>
+  </button>
+}

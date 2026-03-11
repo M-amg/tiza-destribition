@@ -1,0 +1,117 @@
+<div class="container mx-auto px-4 py-16">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold mb-4">{{ 'contact.title' | t }}</h1>
+      <p class="text-xl text-muted-foreground">{{ 'contact.subtitle' | t }}</p>
+    </div>
+
+    @if (successMessage) {
+      <p class="mb-6 rounded border border-green-200 bg-green-50 p-3 text-green-700">{{ successMessage }}</p>
+    }
+    @if (errorMessage) {
+      <p class="mb-6 rounded border border-red-200 bg-red-50 p-3 text-red-700">{{ errorMessage }}</p>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <section class="p-8 bg-card border rounded-lg">
+        <h2 class="text-2xl font-bold mb-6">{{ 'contact.sendMessage' | t }}</h2>
+        <form (ngSubmit)="submit()" class="space-y-4">
+          <div>
+            <label class="block mb-1">{{ 'common.fullName' | t }}</label>
+            <input type="text" [(ngModel)]="form.fullName" name="fullName" [placeholder]="'contact.fullNamePlaceholder' | t" required class="mt-1" />
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'checkout.emailAddress' | t }}</label>
+            <input type="email" [(ngModel)]="form.email" name="email" [placeholder]="'contact.emailPlaceholder' | t" required class="mt-1" />
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'checkout.phoneNumber' | t }}</label>
+            <input type="tel" [(ngModel)]="form.phone" name="phone" [placeholder]="'contact.phonePlaceholder' | t" class="mt-1" />
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'contact.subject' | t }}</label>
+            <input type="text" [(ngModel)]="form.subject" name="subject" [placeholder]="'contact.subjectPlaceholder' | t" required class="mt-1" />
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'contact.message' | t }}</label>
+            <textarea [(ngModel)]="form.message" name="message" rows="5" [placeholder]="'contact.messagePlaceholder' | t" required class="mt-1"></textarea>
+          </div>
+
+          <button type="submit" class="w-full border rounded-md px-4 py-3 bg-primary text-white" [disabled]="loading">
+            {{ loading ? ('contact.sending' | t) : ('contact.sendMessageButton' | t) }}
+          </button>
+        </form>
+      </section>
+
+      <div class="space-y-6">
+      <section class="p-6 bg-card border rounded-lg">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <lucide-icon name="map-pin" [size]="22" class="text-primary"></lucide-icon>
+            </div>
+            <div>
+              <h3 class="font-bold mb-1">{{ 'contact.location' | t }}</h3>
+              <p class="text-muted-foreground">
+                @for (line of storeInfo().addressLines; track line; let isLast = $last) {
+                  {{ line }}@if (!isLast) { <br /> }
+                }
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="p-6 bg-card border rounded-lg">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <lucide-icon name="phone" [size]="22" class="text-primary"></lucide-icon>
+            </div>
+            <div>
+              <h3 class="font-bold mb-1">{{ 'contact.phoneTitle' | t }}</h3>
+              <p class="text-muted-foreground">
+                {{ 'contact.main' | t }}: {{ storeInfo().phone }}
+                @if (storeInfo().salesPhone) { <br />{{ 'contact.sales' | t }}: {{ storeInfo().salesPhone }} }
+                @if (storeInfo().supportPhone) { <br />{{ 'contact.support' | t }}: {{ storeInfo().supportPhone }} }
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="p-6 bg-card border rounded-lg">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <lucide-icon name="mail" [size]="22" class="text-primary"></lucide-icon>
+            </div>
+            <div>
+              <h3 class="font-bold mb-1">{{ 'contact.emailTitle' | t }}</h3>
+              <p class="text-muted-foreground">
+                {{ 'contact.general' | t }}: {{ storeInfo().email }}
+                @if (storeInfo().salesEmail) { <br />{{ 'contact.sales' | t }}: {{ storeInfo().salesEmail }} }
+                @if (storeInfo().supportEmail) { <br />{{ 'contact.support' | t }}: {{ storeInfo().supportEmail }} }
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="p-6 bg-card border rounded-lg">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <lucide-icon name="clock" [size]="22" class="text-primary"></lucide-icon>
+            </div>
+            <div>
+              <h3 class="font-bold mb-1">{{ 'contact.businessHours' | t }}</h3>
+              <p class="text-muted-foreground">
+                @for (line of storeInfo().businessHours; track line; let isLast = $last) {
+                  {{ line }}@if (!isLast) { <br /> }
+                }
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,215 @@
+<section class="panel empty-state" *ngIf="loading">
+  <p>Loading customer...</p>
+</section>
+
+<section *ngIf="!loading && customer; else missingCustomer" class="customer-details">
+  <header class="details-head">
+    <div class="head-left">
+      <a routerLink="/customers" class="btn btn-ghost btn-sm">
+        <lucide-icon [img]="iconBack" [size]="16"></lucide-icon>
+        Back
+      </a>
+      <div>
+        <h1>{{ customer.name }}</h1>
+        <p>Customer Details</p>
+      </div>
+    </div>
+  </header>
+
+  <p class="form-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <section class="details-grid">
+    <div class="main-col">
+      <article class="panel section-card">
+        <div class="card-head">
+          <h2>Profile Information</h2>
+          <span
+            class="chip"
+            [class.chip-success]="customer.status === 'active'"
+            [class.chip-muted]="customer.status === 'inactive'"
+            [class.chip-danger]="customer.status === 'blocked'"
+          >
+            {{ customer.status }}
+          </span>
+        </div>
+
+        <div class="profile-block">
+          <div class="avatar">
+            <lucide-icon [img]="iconUser" [size]="36"></lucide-icon>
+          </div>
+          <div>
+            <h3>{{ customer.name }}</h3>
+            <p *ngIf="customer.company">{{ customer.company }}</p>
+          </div>
+        </div>
+
+        <div class="contact-list">
+          <a class="contact-item" [href]="'mailto:' + customer.email">
+            <lucide-icon [img]="iconMail" [size]="14"></lucide-icon>
+            <div>
+              <small>Email</small>
+              <strong>{{ customer.email }}</strong>
+            </div>
+          </a>
+
+          <a class="contact-item" [href]="'tel:' + customer.phone">
+            <lucide-icon [img]="iconPhone" [size]="14"></lucide-icon>
+            <div>
+              <small>Phone</small>
+              <strong>{{ customer.phone }}</strong>
+            </div>
+          </a>
+
+          <div class="contact-item align-start">
+            <lucide-icon [img]="iconMapPin" [size]="14"></lucide-icon>
+            <div>
+              <small>Address</small>
+              <strong>
+                {{ customer.address.street }}<br />
+                {{ customer.address.city }}, {{ customer.address.state }} {{ customer.address.zipCode }}<br />
+                {{ customer.address.country }}
+              </strong>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <lucide-icon [img]="iconCalendar" [size]="14"></lucide-icon>
+            <div>
+              <small>Customer Since</small>
+              <strong>{{ formattedJoinDate }}</strong>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Customer Type</h2>
+
+        <div class="field-stack">
+          <label for="customer-type">Select Customer Type (B2B/B2C)</label>
+          <select id="customer-type" [(ngModel)]="selectedType">
+            <option value="B2C">B2C - Retail Customer</option>
+            <option value="B2B">B2B - Business Customer</option>
+          </select>
+        </div>
+
+        <div class="type-note">
+          <p *ngIf="selectedType === 'B2B'">
+            <strong>B2B customers</strong> receive wholesale pricing and can place bulk orders with special discounts.
+          </p>
+          <p *ngIf="selectedType === 'B2C'">
+            <strong>B2C customers</strong> receive retail pricing and standard promotional offers.
+          </p>
+        </div>
+
+        <div class="save-row">
+          <button type="button" class="btn btn-primary" [disabled]="savingType" (click)="saveCustomerType()">
+            {{ savingType ? 'Saving...' : 'Save Customer Type' }}
+          </button>
+          <span class="saved" *ngIf="savedType">Saved</span>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Order History</h2>
+
+        <div class="empty-block" *ngIf="orders.length === 0">
+          <lucide-icon [img]="iconOrders" [size]="40"></lucide-icon>
+          <p>No orders yet</p>
+        </div>
+
+        <div class="table-scroll" *ngIf="orders.length > 0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order Number</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Type</th>
+                <th class="text-right">Total</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of orders; trackBy: trackById">
+                <td class="semi">{{ order.orderNumber }}</td>
+                <td>{{ order.date }}</td>
+                <td><span [class]="statusChipClass[order.status]">{{ order.status }}</span></td>
+                <td><span class="chip" [class.chip-brand]="order.customerType === 'B2B'">{{ order.customerType }}</span></td>
+                <td class="text-right semi">{{ order.total | number : '1.2-2' }} DH</td>
+                <td>
+                  <div class="actions">
+                    <a class="btn btn-ghost btn-sm btn-icon" [routerLink]="['/orders', order.id]">
+                      <lucide-icon [img]="iconEye" [size]="16"></lucide-icon>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+
+    <aside class="side-col">
+      <article class="panel section-card">
+        <h2>Statistics</h2>
+
+        <div class="stats-stack">
+          <div class="mini-stat primary-bg">
+            <div class="icon-wrap"><lucide-icon [img]="iconOrders" [size]="18"></lucide-icon></div>
+            <div>
+              <small>Total Orders</small>
+              <strong>{{ customer.totalOrders }}</strong>
+            </div>
+          </div>
+
+          <div class="mini-stat accent-bg">
+            <div class="icon-wrap"><lucide-icon [img]="iconDollar" [size]="18"></lucide-icon></div>
+            <div>
+              <small>Total Spent</small>
+              <strong>{{ customer.totalSpent | number : '1.2-2' }} DH</strong>
+            </div>
+          </div>
+
+          <div class="mini-stat success-bg">
+            <div class="icon-wrap"><lucide-icon [img]="iconDollar" [size]="18"></lucide-icon></div>
+            <div>
+              <small>Average Order</small>
+              <strong>{{ averageOrderValue | number : '1.2-2' }} DH</strong>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Current Type</h2>
+        <div class="type-box" [class.b2b]="selectedType === 'B2B'" [class.b2c]="selectedType === 'B2C'">
+          <span class="chip" [class.chip-brand]="selectedType === 'B2B'" [class.chip-warning]="selectedType === 'B2C'">
+            {{ selectedType }}
+          </span>
+          <strong>{{ selectedType === 'B2B' ? 'Business Customer' : 'Retail Customer' }}</strong>
+          <p>{{ selectedType === 'B2B' ? 'Wholesale pricing applies' : 'Retail pricing applies' }}</p>
+        </div>
+      </article>
+
+      <article class="panel section-card actions-card">
+        <h2>Actions</h2>
+        <a class="btn btn-secondary" [href]="'mailto:' + customer.email">
+          <lucide-icon [img]="iconMail" [size]="16"></lucide-icon>
+          Send Email
+        </a>
+        <button type="button" class="btn btn-secondary">Edit Customer</button>
+        <a class="btn btn-secondary" routerLink="/orders">View All Orders</a>
+      </article>
+    </aside>
+  </section>
+</section>
+
+<ng-template #missingCustomer>
+  <section class="panel empty-state" *ngIf="!loading">
+    <h2>Customer not found</h2>
+    <p>{{ errorMessage || 'This customer id does not exist.' }}</p>
+    <a routerLink="/customers" class="btn btn-primary">Return to customers</a>
+  </section>
+</ng-template>

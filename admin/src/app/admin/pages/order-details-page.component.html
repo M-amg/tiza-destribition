@@ -1,0 +1,260 @@
+<section class="panel empty-state" *ngIf="loading">
+  <p>Loading order...</p>
+</section>
+
+<section *ngIf="!loading && order; else missingOrder" class="order-details">
+  <header class="details-head">
+    <div class="head-left">
+      <a routerLink="/orders" class="btn btn-ghost btn-sm">
+        <lucide-icon [img]="iconBack" [size]="16"></lucide-icon>
+        Back
+      </a>
+      <div>
+        <h1>{{ order.orderNumber }}</h1>
+        <p>Placed on {{ formattedPlacedDate }}</p>
+      </div>
+    </div>
+  </header>
+
+  <p class="form-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <section class="details-grid">
+    <div class="main-col">
+      <article class="panel section-card">
+        <h2>Order Information</h2>
+        <div class="info-grid">
+          <div>
+            <small>Order Number</small>
+            <strong>{{ order.orderNumber }}</strong>
+          </div>
+          <div>
+            <small>Date</small>
+            <strong>{{ formattedPlacedDate }}</strong>
+          </div>
+          <div>
+            <small>Status</small>
+            <span [class]="statusChipClass[currentStatus]">{{ currentStatus }}</span>
+          </div>
+          <div>
+            <small>Payment Status</small>
+            <span [class]="paymentChipClass[order.paymentStatus]">{{ order.paymentStatus }}</span>
+          </div>
+          <div>
+            <small>Payment Method</small>
+            <strong class="inline-meta">
+              <lucide-icon [img]="iconCard" [size]="14"></lucide-icon>
+              {{ paymentMethodLabel }}
+            </strong>
+          </div>
+          <div>
+            <small>Customer Type</small>
+            <span class="chip" [class.chip-brand]="order.customerType === 'B2B'">{{ order.customerType }}</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Customer Information</h2>
+
+        <div class="customer-head">
+          <span>{{ order.customerName.slice(0, 1) }}</span>
+          <div>
+            <strong>{{ order.customerName }}</strong>
+            <span class="chip" [class.chip-brand]="order.customerType === 'B2B'">{{ order.customerType }} Customer</span>
+          </div>
+        </div>
+
+        <div class="contact-list">
+          <a [href]="'mailto:' + order.customerEmail" class="contact-item">
+            <lucide-icon [img]="iconMail" [size]="14"></lucide-icon>
+            {{ order.customerEmail }}
+          </a>
+          <a class="contact-item" [href]="'tel:' + customerPhone">
+            <lucide-icon [img]="iconPhone" [size]="14"></lucide-icon>
+            {{ customerPhone || 'No phone available' }}
+          </a>
+          <div class="contact-item align-start">
+            <lucide-icon [img]="iconMapPin" [size]="14"></lucide-icon>
+            <div>
+              <strong>Shipping Address</strong>
+              <small>
+                {{ order.shippingAddress.street }}<br />
+                <ng-container *ngIf="order.shippingAddress.line2">{{ order.shippingAddress.line2 }}<br /></ng-container>
+                {{ order.shippingAddress.city }}, {{ order.shippingAddress.state }} {{ order.shippingAddress.zipCode }}<br />
+                {{ order.shippingAddress.country }}
+              </small>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Order Items</h2>
+
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Discount</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of order.items">
+                <td>
+                  <div class="item-cell">
+                    <img [src]="itemImage(item)" [alt]="item.productName" />
+                    <span>{{ item.productName }}</span>
+                  </div>
+                </td>
+                <td>{{ item.quantity }}</td>
+                <td>
+                  <strong>{{ item.price | number : '1.2-2' }} DH</strong>
+                  <span class="chip" [class.chip-brand]="order.customerType === 'B2B'">{{ order.customerType }}</span>
+                </td>
+                <td><span class="muted">-</span></td>
+                <td class="text-right"><strong>{{ itemLineTotal(item) | number : '1.2-2' }} DH</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel coupon-card" *ngIf="order.couponCode">
+        <div class="coupon-head">
+          <lucide-icon [img]="iconTag" [size]="16"></lucide-icon>
+          <div>
+            <h3>Coupon Applied</h3>
+            <p>Code: <strong>{{ order.couponCode }}</strong></p>
+            <p *ngIf="order.couponDiscount">Discount: {{ order.couponDiscount | number : '1.2-2' }} DH</p>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <aside class="side-col">
+      <article class="panel section-card">
+        <h2>Order Summary</h2>
+        <dl class="summary-list">
+          <div><dt>Subtotal</dt><dd>{{ order.subtotal | number : '1.2-2' }} DH</dd></div>
+          <div *ngIf="order.couponDiscount && order.couponDiscount > 0" class="discount-row">
+            <dt>Coupon Discount</dt><dd>-{{ order.couponDiscount | number : '1.2-2' }} DH</dd>
+          </div>
+          <div><dt>Shipping</dt><dd>{{ order.shipping | number : '1.2-2' }} DH</dd></div>
+          <div><dt>Tax</dt><dd>{{ order.tax | number : '1.2-2' }} DH</dd></div>
+          <div class="total-row"><dt>Total</dt><dd>{{ order.total | number : '1.2-2' }} DH</dd></div>
+        </dl>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Order Actions</h2>
+        <div class="action-list">
+          <button
+            *ngIf="canConfirm"
+            type="button"
+            class="btn btn-primary"
+            [disabled]="savingStatus"
+            (click)="updateStatus('processing')"
+          >
+            <lucide-icon [img]="iconCheck" [size]="16"></lucide-icon>
+            Confirm Order
+          </button>
+
+          <button
+            *ngIf="canMarkProcessing"
+            type="button"
+            class="btn btn-secondary"
+            [disabled]="savingStatus"
+            (click)="updateStatus('processing')"
+          >
+            <lucide-icon [img]="iconClock" [size]="16"></lucide-icon>
+            Mark as Processing
+          </button>
+
+          <button
+            *ngIf="canMarkShipped"
+            type="button"
+            class="btn btn-secondary"
+            [disabled]="savingStatus"
+            (click)="updateStatus('shipped')"
+          >
+            <lucide-icon [img]="iconTruck" [size]="16"></lucide-icon>
+            Mark as Shipped
+          </button>
+
+          <button
+            *ngIf="canMarkDelivered"
+            type="button"
+            class="btn btn-secondary"
+            [disabled]="savingStatus"
+            (click)="updateStatus('delivered')"
+          >
+            <lucide-icon [img]="iconPackage" [size]="16"></lucide-icon>
+            Mark as Delivered
+          </button>
+
+          <button *ngIf="canCancel" type="button" class="btn btn-danger" [disabled]="savingStatus" (click)="cancelOrder()">
+            <lucide-icon [img]="iconCancel" [size]="16"></lucide-icon>
+            Cancel Order
+          </button>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Order Timeline</h2>
+        <div class="timeline">
+          <div class="timeline-item done">
+            <span class="dot"><lucide-icon [img]="iconCheck" [size]="14"></lucide-icon></span>
+            <div>
+              <strong>Order Placed</strong>
+              <small>{{ order.date }}</small>
+            </div>
+          </div>
+
+          <div class="timeline-item" [class.done]="isProgressComplete('processing')">
+            <span class="dot"><lucide-icon [img]="iconClock" [size]="14"></lucide-icon></span>
+            <div>
+              <strong>Processing</strong>
+              <small>Order confirmed</small>
+            </div>
+          </div>
+
+          <div class="timeline-item" [class.done]="isProgressComplete('shipped')">
+            <span class="dot"><lucide-icon [img]="iconTruck" [size]="14"></lucide-icon></span>
+            <div>
+              <strong>Shipped</strong>
+              <small>Out for delivery</small>
+            </div>
+          </div>
+
+          <div class="timeline-item" [class.done]="isProgressComplete('delivered')" *ngIf="currentStatus !== 'cancelled'">
+            <span class="dot"><lucide-icon [img]="iconPackage" [size]="14"></lucide-icon></span>
+            <div>
+              <strong>Delivered</strong>
+              <small>Successfully delivered</small>
+            </div>
+          </div>
+
+          <div class="timeline-item cancelled" *ngIf="currentStatus === 'cancelled'">
+            <span class="dot"><lucide-icon [img]="iconCancel" [size]="14"></lucide-icon></span>
+            <div>
+              <strong>Cancelled</strong>
+              <small>Order was cancelled</small>
+            </div>
+          </div>
+        </div>
+      </article>
+    </aside>
+  </section>
+</section>
+
+<ng-template #missingOrder>
+  <section class="panel empty-state" *ngIf="!loading">
+    <h2>Order not found</h2>
+    <p>{{ errorMessage || 'This order id does not exist.' }}</p>
+    <a routerLink="/orders" class="btn btn-primary">Return to orders</a>
+  </section>
+</ng-template>

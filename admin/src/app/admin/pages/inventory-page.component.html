@@ -1,0 +1,183 @@
+<section class="page-head">
+  <div>
+    <h1>Inventory Management</h1>
+    <p>Monitor stock levels and manage inventory</p>
+  </div>
+</section>
+
+<section class="stats-grid">
+  <article class="panel stat-card">
+    <div class="stat-head">
+      <p>Total Items</p>
+      <lucide-icon [img]="iconPackage" [size]="18" class="stat-icon icon-primary"></lucide-icon>
+    </div>
+    <strong>{{ inventoryItems.length }}</strong>
+  </article>
+
+  <article class="panel stat-card">
+    <div class="stat-head">
+      <p>In Stock</p>
+      <span class="status-dot status-in-stock" aria-hidden="true"></span>
+    </div>
+    <strong class="value-success">{{ inStockCount }}</strong>
+  </article>
+
+  <article class="panel stat-card">
+    <div class="stat-head">
+      <p>Low Stock</p>
+      <lucide-icon [img]="iconAlertTriangle" [size]="18" class="stat-icon icon-warning"></lucide-icon>
+    </div>
+    <strong class="value-warning">{{ lowStockCount }}</strong>
+  </article>
+
+  <article class="panel stat-card">
+    <div class="stat-head">
+      <p>Out of Stock</p>
+      <lucide-icon [img]="iconTrendingDown" [size]="18" class="stat-icon icon-danger"></lucide-icon>
+    </div>
+    <strong class="value-danger">{{ outOfStockCount }}</strong>
+  </article>
+</section>
+
+<section class="tabs-wrap">
+  <p class="loading-message" *ngIf="loading">Loading inventory...</p>
+  <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="success-message" *ngIf="successMessage">{{ successMessage }}</p>
+
+  <div class="tabs-list">
+    <button
+      type="button"
+      class="tab-trigger"
+      [class.active]="activeTab === 'inventory'"
+      (click)="setActiveTab('inventory')"
+    >
+      Inventory
+    </button>
+    <button
+      type="button"
+      class="tab-trigger"
+      [class.active]="activeTab === 'history'"
+      (click)="setActiveTab('history')"
+    >
+      Stock History
+    </button>
+  </div>
+
+  <ng-container *ngIf="activeTab === 'inventory'; else historyTab">
+    <article class="panel filters-panel">
+      <div class="filters-grid">
+        <div class="field field-search">
+          <label for="inventory-search">Search</label>
+          <div class="search-wrap">
+            <lucide-icon [img]="iconSearch" [size]="16" class="search-icon"></lucide-icon>
+            <input
+              id="inventory-search"
+              type="search"
+              placeholder="Search products..."
+              [(ngModel)]="searchTerm"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="inventory-status">Stock Status</label>
+          <select id="inventory-status" [(ngModel)]="statusFilter">
+            <option value="all">All Status</option>
+            <option value="in_stock">In Stock</option>
+            <option value="low_stock">Low Stock</option>
+            <option value="out_of_stock">Out of Stock</option>
+          </select>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel table-panel">
+      <div class="table-scroll">
+        <table class="data-table inventory-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>SKU</th>
+              <th>Category</th>
+              <th>Stock Quantity</th>
+              <th>Minimum Level</th>
+              <th>Status</th>
+              <th>Last Restocked</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="!loading && filteredInventory.length === 0">
+              <td colspan="8" class="empty-cell">No inventory records found</td>
+            </tr>
+            <tr *ngFor="let item of filteredInventory; trackBy: trackById">
+              <td>
+                <div class="product-cell">
+                  <img [src]="item.image" [alt]="item.productName" class="thumb" />
+                  <strong>{{ item.productName }}</strong>
+                </div>
+              </td>
+              <td class="mono">{{ item.sku }}</td>
+              <td><span class="chip chip-outline">{{ item.category }}</span></td>
+              <td><span class="stock-qty">{{ item.stockQuantity }}</span></td>
+              <td class="text-muted">{{ item.minimumLevel }}</td>
+              <td><span [class]="inventoryStatusClass(item.status)">{{ formatInventoryStatus(item.status) }}</span></td>
+              <td class="text-sm">{{ item.lastRestocked || 'N/A' }}</td>
+              <td class="text-right">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  [disabled]="restockingProductId === item.id"
+                  (click)="restockProduct(item)"
+                >
+                  {{ restockingProductId === item.id ? 'Saving...' : 'Restock' }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </ng-container>
+</section>
+
+<ng-template #historyTab>
+  <article class="panel table-panel history-panel">
+    <h2>Stock Movement History</h2>
+    <div class="table-scroll">
+      <table class="data-table history-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Change Type</th>
+            <th>Quantity</th>
+            <th>Previous Stock</th>
+            <th>New Stock</th>
+            <th>Date</th>
+            <th>User</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let event of stockHistory; trackBy: trackById">
+            <td><strong>{{ event.productName }}</strong></td>
+            <td><span [class]="historyTypeClass(event.changeType)">{{ formatChangeType(event.changeType) }}</span></td>
+            <td>
+              <span class="qty" [class.qty-positive]="event.quantity > 0" [class.qty-negative]="event.quantity < 0">
+                {{ quantityLabel(event.quantity) }}
+              </span>
+            </td>
+            <td>{{ event.previousStock }}</td>
+            <td><strong>{{ event.newStock }}</strong></td>
+            <td class="text-sm">{{ event.date }}</td>
+            <td class="text-sm">{{ event.adminUser }}</td>
+            <td class="text-sm text-muted">{{ event.notes || '-' }}</td>
+          </tr>
+          <tr *ngIf="!loading && stockHistory.length === 0">
+            <td colspan="8" class="empty-cell">No stock movement history found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</ng-template>

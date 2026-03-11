@@ -1,0 +1,46 @@
+.page-head {
+  margin-bottom: 0.8rem;
+}
+
+.page-head h1 {
+  margin: 0;
+}
+
+.filters-row {
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  padding: 0.8rem;
+  background: var(--surface);
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.table-card {
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: var(--surface);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.55rem;
+  border-bottom: 1px solid var(--line);
+}
+
+@media (max-width: 740px) {
+  .filters-row {
+    grid-template-columns: 1fr;
+  }
+}

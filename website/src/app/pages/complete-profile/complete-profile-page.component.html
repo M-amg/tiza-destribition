@@ -1,0 +1,138 @@
+<div class="min-h-screen flex items-center justify-center p-8 bg-gradient-to-br from-primary/5 to-orange-500/5">
+  <div class="w-full max-w-4xl p-8 shadow-xl border rounded-lg bg-card">
+    <div class="flex flex-col items-center mb-8">
+      <div class="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4 shadow-lg text-white">
+        <lucide-icon name="check" [size]="30"></lucide-icon>
+      </div>
+      <h1 class="text-3xl font-bold">{{ 'profile.complete.title' | t }}</h1>
+      <p class="text-muted-foreground text-center mt-2 max-w-md">{{ 'profile.complete.subtitle' | t }}</p>
+    </div>
+
+    @if (message) {
+      <p class="mb-4 rounded border border-green-200 bg-green-50 p-3 text-green-700">{{ message }}</p>
+    }
+    @if (errorMessage) {
+      <p class="mb-4 rounded border border-red-200 bg-red-50 p-3 text-red-700">{{ errorMessage }}</p>
+    }
+
+    @if (loading) {
+      <p>{{ 'common.loadingProfile' | t }}</p>
+    } @else {
+      <form (ngSubmit)="save()" class="space-y-8">
+        <div>
+          <label class="text-lg mb-4 block font-semibold">{{ 'profile.complete.selectType' | t }} *</label>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div
+              class="group relative cursor-pointer rounded-xl border-2 p-6 transition-all"
+              [class.border-orange-500]="selectedCustomerType === 'B2C'"
+              [class.bg-orange-50]="selectedCustomerType === 'B2C'"
+              [class.border-border]="selectedCustomerType !== 'B2C'"
+              (click)="setCustomerType('B2C')"
+            >
+              <div class="flex flex-col items-center text-center">
+                <div class="w-16 h-16 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center mb-4">
+                  <lucide-icon name="user" [size]="32"></lucide-icon>
+                </div>
+                <h3 class="font-bold text-xl mb-1">{{ 'profile.complete.personalAccount' | t }}</h3>
+                <p class="text-sm text-muted-foreground mb-3">{{ 'profile.complete.personalText' | t }}</p>
+                <div class="space-y-1 text-left w-full text-sm">
+                  <p>{{ 'profile.complete.personalBenefit1' | t }}</p>
+                  <p>{{ 'profile.complete.personalBenefit2' | t }}</p>
+                  <p>{{ 'profile.complete.personalBenefit3' | t }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="group relative cursor-pointer rounded-xl border-2 p-6 transition-all"
+              [class.border-primary]="selectedCustomerType === 'B2B'"
+              [class.bg-blue-50]="selectedCustomerType === 'B2B'"
+              [class.border-border]="selectedCustomerType !== 'B2B'"
+              (click)="setCustomerType('B2B')"
+            >
+              <div class="flex flex-col items-center text-center">
+                <div class="w-16 h-16 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+                  <lucide-icon name="building-2" [size]="32"></lucide-icon>
+                </div>
+                <h3 class="font-bold text-xl mb-1">{{ 'profile.complete.businessAccount' | t }}</h3>
+                <p class="text-sm text-muted-foreground mb-3">{{ 'profile.complete.businessText' | t }}</p>
+                <div class="space-y-1 text-left w-full text-sm">
+                  <p>{{ 'profile.complete.businessBenefit1' | t }}</p>
+                  <p>{{ 'profile.complete.businessBenefit2' | t }}</p>
+                  <p>{{ 'profile.complete.businessBenefit3' | t }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-muted-foreground mt-3">
+            {{ 'profile.complete.accountTypeNote' | t }}
+          </p>
+        </div>
+
+        <div>
+          <label class="block mb-1">{{ 'checkout.phoneNumber' | t }} *</label>
+          <input type="tel" [(ngModel)]="form.phone" name="phone" placeholder="+212 6XX XXX XXX" required [disabled]="saving" />
+        </div>
+
+        @if (selectedCustomerType === 'B2B') {
+          <div class="border-t pt-6 space-y-4">
+            <h3 class="font-semibold text-lg">{{ 'profile.complete.companyInformation' | t }}</h3>
+            <div>
+              <label class="block mb-1">{{ 'auth.register.companyName' | t }}</label>
+              <input [(ngModel)]="companyName" name="companyName" placeholder="Your Company Ltd." [disabled]="saving" />
+            </div>
+            <div>
+              <label class="block mb-1">{{ 'auth.register.taxId' | t }}</label>
+              <input [(ngModel)]="taxId" name="taxId" placeholder="000000000000000" [disabled]="saving" />
+            </div>
+          </div>
+        }
+
+        <div>
+          <label class="block mb-1">{{ 'dashboard.company.contactPerson' | t }} *</label>
+          <input [(ngModel)]="form.recipientName" name="recipientName" required [disabled]="saving" />
+        </div>
+
+        <div>
+          <label class="block mb-1">{{ 'common.address' | t }} *</label>
+          <input [(ngModel)]="form.addressLine1" name="addressLine1" required [disabled]="saving" />
+        </div>
+
+        <div>
+          <label class="block mb-1">{{ 'dashboard.company.addressLine2' | t }}</label>
+          <input [(ngModel)]="form.addressLine2" name="addressLine2" [disabled]="saving" />
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block mb-1">{{ 'common.city' | t }} *</label>
+            <input [(ngModel)]="form.city" name="city" required [disabled]="saving" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ 'common.country' | t }} *</label>
+            <input [(ngModel)]="form.country" name="country" required [disabled]="saving" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block mb-1">{{ 'common.state' | t }}</label>
+            <input [(ngModel)]="form.state" name="state" [disabled]="saving" />
+          </div>
+          <div>
+            <label class="block mb-1">{{ 'common.zipCode' | t }}</label>
+            <input [(ngModel)]="form.zipCode" name="zipCode" [disabled]="saving" />
+          </div>
+        </div>
+
+        <button type="submit" class="w-full border rounded-md px-4 py-2 bg-primary text-white" [disabled]="saving">
+          {{ saving ? ('auth.register.creating' | t) : ('profile.complete.saveAndContinue' | t) }}
+        </button>
+      </form>
+
+      <div class="mt-6 text-center">
+        <button type="button" class="border rounded-md px-4 py-2" (click)="continueToDashboard()">{{ 'profile.complete.goToDashboard' | t }}</button>
+      </div>
+    }
+  </div>
+</div>

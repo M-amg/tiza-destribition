@@ -1,0 +1,124 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold">{{ 'dashboard.company.title' | t }}</h1>
+    <p class="text-muted-foreground mt-2">{{ 'dashboard.company.subtitle' | t }}</p>
+  </div>
+
+  @if (!isB2B()) {
+    <p class="text-sm text-muted-foreground">{{ 'dashboard.company.optionalText' | t }}</p>
+  }
+
+  @if (message) {
+    <p class="rounded border border-green-200 bg-green-50 p-3 text-green-700">{{ message }}</p>
+  }
+  @if (errorMessage) {
+    <p class="rounded border border-red-200 bg-red-50 p-3 text-red-700">{{ errorMessage }}</p>
+  }
+
+  @if (loading) {
+    <p class="text-muted-foreground">{{ 'dashboard.company.loading' | t }}</p>
+  } @else {
+    <form (ngSubmit)="saveAddress()" class="space-y-6">
+      <section class="p-6 border rounded-lg">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <lucide-icon name="building-2" [size]="24"></lucide-icon>
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold">{{ 'dashboard.company.companyInformation' | t }}</h2>
+            <p class="text-sm text-muted-foreground">{{ 'dashboard.company.registrationDetails' | t }}</p>
+          </div>
+        </div>
+
+        @if (addresses.length > 0) {
+          <div class="mb-4">
+            <label class="block mb-1">{{ 'dashboard.company.savedAddresses' | t }}</label>
+            <select [ngModel]="selectedAddressId" name="selectedAddressId" (ngModelChange)="onAddressChange($event)">
+              @for (address of addresses; track address.id) {
+                <option [value]="address.id">{{ address.recipientName }} - {{ address.addressLine1 }}, {{ address.city }}</option>
+              }
+            </select>
+          </div>
+        }
+
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block mb-1">{{ 'dashboard.company.companyName' | t }} *</label>
+              <input [(ngModel)]="companyName" name="companyName" required [disabled]="saving" />
+            </div>
+
+            <div>
+              <label class="block mb-1">{{ 'dashboard.company.taxId' | t }}</label>
+              <input [(ngModel)]="taxId" name="taxId" [disabled]="saving" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'dashboard.company.companyAddress' | t }} *</label>
+            <input [(ngModel)]="form.addressLine1" name="addressLine1" required [disabled]="saving" />
+          </div>
+
+          <div>
+            <label class="block mb-1">{{ 'dashboard.company.addressLine2' | t }}</label>
+            <input [(ngModel)]="form.addressLine2" name="addressLine2" [disabled]="saving" />
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block mb-1">{{ 'common.city' | t }} *</label>
+              <input [(ngModel)]="form.city" name="city" required [disabled]="saving" />
+            </div>
+
+            <div>
+              <label class="block mb-1">{{ 'common.state' | t }}</label>
+              <input [(ngModel)]="form.state" name="state" [disabled]="saving" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block mb-1">{{ 'common.zipCode' | t }}</label>
+              <input [(ngModel)]="form.zipCode" name="zipCode" [disabled]="saving" />
+            </div>
+
+            <div>
+              <label class="block mb-1">{{ 'common.country' | t }} *</label>
+              <input [(ngModel)]="form.country" name="country" required [disabled]="saving" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="p-6 border rounded-lg">
+        <h3 class="text-lg font-semibold mb-4">{{ 'dashboard.company.contactInformation' | t }}</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block mb-1">{{ 'dashboard.company.contactPerson' | t }} *</label>
+            <input [(ngModel)]="form.recipientName" name="recipientName" required [disabled]="saving" />
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block mb-1">{{ 'checkout.phoneNumber' | t }} *</label>
+              <input [(ngModel)]="form.phone" name="phone" required [disabled]="saving" />
+            </div>
+
+            <div>
+              <label class="block mb-1">{{ 'dashboard.company.emailAddress' | t }}</label>
+              <input [ngModel]="user()?.email || ''" name="emailPreview" readonly />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="flex justify-end gap-3">
+        <button type="button" class="border rounded-md px-4 py-2" [disabled]="saving" (click)="cancelChanges()">{{ 'common.cancel' | t }}</button>
+        <button type="submit" class="border rounded-md px-4 py-2 bg-primary text-white" [disabled]="saving">
+          <lucide-icon name="save" [size]="16" class="inline mr-2"></lucide-icon>
+          {{ saving ? ('auth.register.creating' | t) : ('common.saveChanges' | t) }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

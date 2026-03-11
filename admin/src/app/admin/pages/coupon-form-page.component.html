@@ -1,0 +1,241 @@
+<section class="form-head">
+  <a routerLink="/coupons" class="btn btn-ghost btn-sm">
+    <lucide-icon [img]="iconBack" [size]="16"></lucide-icon>
+    Back
+  </a>
+  <div>
+    <h1>{{ isEdit ? 'Edit Coupon' : 'Create Coupon' }}</h1>
+    <p>{{ isEdit ? 'Update coupon information and settings' : 'Create a new discount coupon' }}</p>
+  </div>
+</section>
+
+<p class="form-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+<section class="panel empty-state" *ngIf="loadingInitial">
+  <h2>Loading coupon form...</h2>
+</section>
+
+<section class="panel empty-state" *ngIf="!loadingInitial && isEdit && !couponFound">
+  <h2>Coupon not found</h2>
+  <p>This coupon id does not exist.</p>
+  <a routerLink="/coupons" class="btn btn-primary">Return to coupons</a>
+</section>
+
+<form class="coupon-form" [formGroup]="form" (ngSubmit)="submit()" *ngIf="!loadingInitial && (!isEdit || couponFound)">
+  <section class="form-grid">
+    <div class="main-col">
+      <article class="panel section-card">
+        <h2>Basic Information</h2>
+
+        <div class="field-stack">
+          <label for="coupon-code">Coupon Code *</label>
+          <input
+            id="coupon-code"
+            type="text"
+            formControlName="code"
+            class="mono"
+            placeholder="e.g., WELCOME20"
+            (input)="form.controls.code.setValue(form.controls.code.value.toUpperCase())"
+          />
+          <small>Customers will enter this code at checkout.</small>
+        </div>
+
+        <div class="field-stack">
+          <label for="coupon-name">Coupon Name *</label>
+          <input id="coupon-name" type="text" formControlName="name" placeholder="e.g., Welcome Discount" />
+        </div>
+
+        <div class="field-stack">
+          <label for="coupon-description">Description</label>
+          <textarea id="coupon-description" rows="3" formControlName="description" placeholder="Internal description"></textarea>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Discount</h2>
+
+        <div class="two-col">
+          <div class="field-stack">
+            <label for="discount-type">Discount Type *</label>
+            <select id="discount-type" formControlName="discountType">
+              <option value="percentage">Percentage</option>
+              <option value="fixed">Fixed Amount</option>
+            </select>
+          </div>
+
+          <div class="field-stack">
+            <label for="discount-value">Discount Value *</label>
+            <div class="currency-input">
+              <span>{{ discountType === 'percentage' ? '%' : 'DH' }}</span>
+              <input id="discount-value" type="number" min="0" step="0.01" formControlName="discountValue" placeholder="0.00" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field-stack" *ngIf="discountType === 'percentage'">
+          <label for="max-cap">Maximum Discount Cap (Optional)</label>
+          <div class="currency-input">
+            <span>DH</span>
+            <input id="max-cap" type="number" min="0" step="0.01" formControlName="maxDiscountCap" placeholder="No cap" />
+          </div>
+          <small>Maximum discount amount regardless of order value.</small>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Eligibility</h2>
+
+        <div class="field-stack">
+          <label for="segment">Customer Segment *</label>
+          <select id="segment" formControlName="segment">
+            <option value="all">All Customers</option>
+            <option value="B2B">B2B Only</option>
+            <option value="B2C">B2C Only</option>
+          </select>
+          <small>Which customer types can use this coupon.</small>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Applicability</h2>
+
+        <div class="field-stack">
+          <label for="apply-to">Apply To *</label>
+          <select id="apply-to" formControlName="applicability">
+            <option value="entire">Entire Store</option>
+            <option value="categories">Specific Categories</option>
+            <option value="products">Specific Products</option>
+          </select>
+        </div>
+
+        <div class="picker-box" *ngIf="applicability === 'categories'">
+          <label>Select Categories</label>
+          <div class="picker-list">
+            <label class="picker-item" *ngFor="let category of categories">
+              <input type="checkbox" [checked]="isCategorySelected(category.id)" (change)="toggleCategory(category.id)" />
+              <span>{{ category.name }}</span>
+            </label>
+          </div>
+          <small>{{ selectedCategoriesCount }} categories selected</small>
+        </div>
+
+        <div class="picker-box" *ngIf="applicability === 'products'">
+          <label>Select Products</label>
+          <div class="picker-list products-list">
+            <label class="picker-item product-item" *ngFor="let product of products | slice : 0 : 10">
+              <input type="checkbox" [checked]="isProductSelected(product.id)" (change)="toggleProduct(product.id)" />
+              <img [src]="product.imageUrl || 'https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=120&h=120&fit=crop'" [alt]="product.name" />
+              <div>
+                <strong>{{ product.name }}</strong>
+                <small>SKU: {{ product.sku }}</small>
+              </div>
+            </label>
+          </div>
+          <small>{{ selectedProductsCount }} products selected</small>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Usage Limits</h2>
+
+        <div class="field-stack">
+          <label for="min-order">Minimum Order Amount</label>
+          <div class="currency-input">
+            <span>DH</span>
+            <input id="min-order" type="number" min="0" step="0.01" formControlName="minimumOrderAmount" placeholder="0.00" />
+          </div>
+          <small>Minimum order value required to use this coupon.</small>
+        </div>
+
+        <div class="two-col">
+          <div class="field-stack">
+            <label for="usage-total">Total Usage Limit</label>
+            <input id="usage-total" type="number" min="0" formControlName="usageLimitTotal" placeholder="Unlimited" />
+            <small>Max times this coupon can be used.</small>
+          </div>
+
+          <div class="field-stack">
+            <label for="usage-customer">Per Customer Limit</label>
+            <input id="usage-customer" type="number" min="0" formControlName="usageLimitPerCustomer" placeholder="Unlimited" />
+            <small>Max uses per customer.</small>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Schedule</h2>
+
+        <div class="two-col">
+          <div class="field-stack">
+            <label for="start-date">Start Date *</label>
+            <input id="start-date" type="date" formControlName="startDate" />
+          </div>
+
+          <div class="field-stack">
+            <label for="end-date">End Date</label>
+            <input id="end-date" type="date" formControlName="endDate" />
+            <small>Leave empty for no expiration.</small>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <aside class="side-col">
+      <article class="panel preview-card">
+        <h3>Coupon Preview</h3>
+
+        <div class="preview-box">
+          <div class="icon-wrap"><lucide-icon [img]="iconTag" [size]="28"></lucide-icon></div>
+          <div class="code">{{ form.controls.code.value || 'COUPON' }}</div>
+          <div class="value">{{ discountLabel }} OFF</div>
+          <p *ngIf="form.controls.maxDiscountCap.value > 0">Up to {{ form.controls.maxDiscountCap.value | number : '1.0-0' }} DH</p>
+          <p *ngIf="form.controls.minimumOrderAmount.value > 0">Min. order: {{ form.controls.minimumOrderAmount.value | number : '1.0-0' }} DH</p>
+          <span
+            class="segment-badge"
+            [class.segment-b2b]="form.controls.segment.value === 'B2B'"
+            [class.segment-b2c]="form.controls.segment.value === 'B2C'"
+            [class.segment-all]="form.controls.segment.value === 'all'"
+          >
+            {{ form.controls.segment.value === 'all' ? 'All Customers' : form.controls.segment.value + ' Only' }}
+          </span>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h3>Status</h3>
+        <div class="status-row">
+          <div>
+            <strong>Coupon Active</strong>
+            <small>{{ form.controls.statusActive.value ? 'Available for use' : 'Deactivated' }}</small>
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [attr.aria-checked]="form.controls.statusActive.value"
+            [class.on]="form.controls.statusActive.value"
+            (click)="toggleStatus(!form.controls.statusActive.value)"
+          >
+            <span></span>
+          </button>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h3>Summary</h3>
+        <dl class="summary-list">
+          <div><dt>Discount:</dt><dd>{{ discountLabel }}</dd></div>
+          <div><dt>Eligibility:</dt><dd>{{ form.controls.segment.value === 'all' ? 'All' : form.controls.segment.value }}</dd></div>
+          <div><dt>Applies to:</dt><dd>{{ appliesToLabel }}</dd></div>
+        </dl>
+      </article>
+
+      <article class="panel section-card actions-card">
+        <button type="submit" class="btn btn-primary" [disabled]="submitting">
+          {{ submitting ? 'Saving...' : (isEdit ? 'Update Coupon' : 'Create Coupon') }}
+        </button>
+        <a routerLink="/coupons" class="btn btn-secondary">Cancel</a>
+      </article>
+    </aside>
+  </section>
+</form>

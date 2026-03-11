@@ -1,0 +1,29 @@
+.app-shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-shell {
+  flex: 1;
+  padding-top: 10.75rem;
+  transition: padding-right 0.24s ease;
+}
+
+@media (min-width: 768px) {
+  .content-shell {
+    padding-top: 10.75rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  :host-context(body.mini-cart-desktop-open) .content-shell {
+    padding-right: 25rem;
+  }
+}
+
+@media (max-width: 767px) {
+  :host-context(body.mobile-cart-bar-visible) .content-shell {
+    padding-bottom: 5.75rem;
+  }
+}

@@ -1,0 +1,384 @@
+@if (isB2B()) {
+  <div class="space-y-6">
+    <div class="flex items-start justify-between gap-4 flex-wrap">
+      <div>
+        <div class="mb-2 flex items-center gap-3">
+          <h1 class="text-3xl font-bold">{{ 'dashboard.home.welcome' | t: { name: customerDisplayName() } }}</h1>
+          <span class="rounded bg-primary px-2 py-1 text-xs text-white">{{ 'dashboard.home.b2bBadge' | t }}</span>
+        </div>
+        <p class="text-muted-foreground">{{ 'dashboard.home.b2bText' | t }}</p>
+      </div>
+
+      <div class="rounded-lg border border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 p-4">
+        <div class="flex items-center gap-2 text-green-700">
+          <lucide-icon name="trending-up" [size]="18"></lucide-icon>
+          <div>
+            <p class="text-sm font-semibold">{{ 'dashboard.wholesalePricingActive' | t }}</p>
+            <p class="text-xs opacity-80">{{ 'dashboard.home.saveUpTo' | t }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (loading) {
+      <p class="text-muted-foreground">{{ 'common.loadingDashboard' | t }}</p>
+    } @else {
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <article class="rounded-lg border border-l-4 border-l-primary p-6">
+          <p class="text-sm text-muted-foreground">{{ 'dashboard.home.totalOrders' | t }}</p>
+          <p class="mt-2 text-3xl font-bold">{{ orders.length }}</p>
+        </article>
+        <article class="rounded-lg border border-l-4 border-l-orange-500 p-6">
+          <p class="text-sm text-muted-foreground">{{ 'dashboard.home.totalSpent' | t }}</p>
+          <p class="mt-2 text-3xl font-bold text-orange-500">{{ totalSpent | number: '1.2-2' }} DH</p>
+        </article>
+        <article class="rounded-lg border border-l-4 border-l-blue-500 p-6">
+          <p class="text-sm text-muted-foreground">{{ 'dashboard.home.lastOrder' | t }}</p>
+          <p class="mt-2 text-lg font-bold">
+            @if (lastOrderDate) {
+              {{ lastOrderDate | date: 'mediumDate' }}
+            } @else {
+              {{ 'dashboard.home.noOrders' | t }}
+            }
+          </p>
+        </article>
+        <article class="rounded-lg bg-gradient-to-br from-green-500 to-green-600 p-6 text-white">
+          <p class="text-sm text-white/90">{{ 'dashboard.home.totalSavings' | t }}</p>
+          <p class="mt-2 text-3xl font-bold">{{ totalSavings | number: '1.2-2' }} DH</p>
+        </article>
+      </div>
+
+      <section class="rounded-lg border p-6">
+        <div class="mb-6 flex items-center justify-between">
+          <h2 class="text-xl font-bold">{{ 'dashboard.home.recentOrders' | t }}</h2>
+          <a [routerLink]="accountRoute('orders')" class="rounded-md border px-3 py-1 text-sm">{{ 'common.viewAll' | t }}</a>
+        </div>
+
+        @if (recentOrders.length === 0) {
+          <div class="py-12 text-center">
+            <p class="text-muted-foreground">{{ 'dashboard.home.noOrdersYet' | t }}</p>
+            <a routerLink="/shop" class="mt-4 inline-block rounded-md bg-primary px-4 py-2 text-white">{{ 'common.startShopping' | t }}</a>
+          </div>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b">
+                  <th class="p-2 text-left">{{ 'common.orderNumber' | t }}</th>
+                  <th class="p-2 text-left">{{ 'common.date' | t }}</th>
+                  <th class="p-2 text-left">{{ 'common.total' | t }}</th>
+                  <th class="p-2 text-left">{{ 'dashboard.home.totalSavings' | t }}</th>
+                  <th class="p-2 text-left">{{ 'common.status' | t }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (order of recentOrders; track order.id) {
+                  <tr class="border-b">
+                    <td class="p-2 font-medium">{{ order.orderNumber }}</td>
+                    <td class="p-2">{{ order.placedAt | date: 'mediumDate' }}</td>
+                    <td class="p-2 font-bold">{{ order.totalAmount | number: '1.2-2' }} DH</td>
+                    <td class="p-2 font-semibold text-green-600">{{ (order.couponDiscount ?? 0) | number: '1.2-2' }} DH</td>
+                    <td class="p-2">
+                      <span class="rounded px-2 py-1 text-xs text-white" [class]="statusClass(order.status)">
+                        {{ ('status.' + order.status.toLowerCase()) | t }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    }
+  </div>
+} @else {
+  <div class="mx-auto max-w-[1080px] space-y-6">
+    <section class="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm md:p-7">
+      <div class="flex flex-col gap-6 md:flex-row md:items-start">
+        <div class="relative shrink-0">
+          <div class="flex h-[5.5rem] w-[5.5rem] items-center justify-center overflow-hidden rounded-full bg-slate-100 shadow-md md:h-24 md:w-24">
+            <img [src]="avatarUrl()" [alt]="customerDisplayName()" class="h-full w-full object-cover" />
+          </div>
+          <button
+            type="button"
+            class="absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white shadow-lg"
+            aria-label="Profile photo placeholder"
+          >
+            <lucide-icon name="camera" [size]="16"></lucide-icon>
+          </button>
+        </div>
+
+        <div class="flex-1">
+          <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+            <div>
+              <h1 class="text-3xl font-bold text-slate-900">{{ customerDisplayName() }}</h1>
+              <div class="mt-3 flex flex-col gap-2 text-sm text-slate-500">
+                <div class="flex items-center gap-2">
+                  <lucide-icon name="mail" [size]="16"></lucide-icon>
+                  <span>{{ user()?.email }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <lucide-icon name="phone" [size]="16"></lucide-icon>
+                  <span>{{ contactPhone() }}</span>
+                </div>
+              </div>
+            </div>
+
+            <button type="button" class="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">
+              <lucide-icon name="edit-3" [size]="16" class="mr-2 inline-flex"></lucide-icon>
+              Edit Profile
+            </button>
+          </div>
+
+          <div class="mt-6 grid gap-3 md:grid-cols-3">
+            <div class="rounded-[1rem] bg-slate-50 px-5 py-4 text-center">
+              <p class="text-[2rem] font-black leading-none text-primary">{{ orders.length }}</p>
+              <p class="mt-1 text-sm text-slate-500">Orders</p>
+            </div>
+            <div class="rounded-[1rem] bg-slate-50 px-5 py-4 text-center">
+              <p class="text-[2rem] font-black leading-none text-primary">{{ wishlistCount }}</p>
+              <p class="mt-1 text-sm text-slate-500">Wishlist</p>
+            </div>
+            <div class="rounded-[1rem] bg-slate-50 px-5 py-4 text-center">
+              <p class="text-[2rem] font-black leading-none text-primary">{{ totalSpent | number: '1.0-0' }} DH</p>
+              <p class="mt-1 text-sm text-slate-500">Total Spent</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="profile-tabs-shell">
+      @for (tab of profileTabs; track tab.key) {
+        <button
+          type="button"
+          class="profile-tab-button"
+          [class.profile-tab-button--active]="activeTab === tab.key"
+          (click)="activeTab = tab.key"
+        >
+          <lucide-icon [name]="tab.icon" [size]="18"></lucide-icon>
+          <span>{{ tab.label }}</span>
+        </button>
+      }
+    </div>
+
+    @if (loading) {
+      <p class="text-slate-500">Loading your profile...</p>
+    } @else {
+      @if (activeTab === 'orders') {
+        <section class="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-bold text-slate-900">Order History</h2>
+            </div>
+            <a [routerLink]="accountRoute('orders')" class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">
+              View all orders
+            </a>
+          </div>
+
+          @if (profileOrders.length === 0) {
+            <div class="rounded-[1.5rem] bg-slate-50 px-6 py-12 text-center">
+              <lucide-icon name="package" [size]="52" class="mx-auto text-slate-300"></lucide-icon>
+              <h3 class="mt-4 text-xl font-bold text-slate-900">No orders yet</h3>
+              <p class="mt-2 text-sm text-slate-500">Your order history will appear here after your first purchase.</p>
+              <a routerLink="/shop" class="mt-6 inline-flex rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white">Start shopping</a>
+            </div>
+          } @else {
+            <div class="space-y-4">
+              @for (order of profileOrders.slice(0, 4); track order.id) {
+                <article class="rounded-[1rem] border border-slate-200 bg-white p-5 transition duration-200 hover:shadow-sm">
+                  <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div class="flex-1">
+                      <div class="mb-2 flex flex-wrap items-center gap-3">
+                        <h3 class="text-[1.35rem] font-semibold leading-none text-slate-900">{{ order.orderNumber }}</h3>
+                        <span class="rounded-full px-2.5 py-1 text-xs font-semibold" [class]="statusBadgeClass(order.status)">
+                          {{ orderStatusLabel(order.status) }}
+                        </span>
+                      </div>
+                      <p class="text-sm text-slate-500">Order Date: {{ order.placedAt | date: 'longDate' }}</p>
+                      <p class="mt-1 text-sm text-slate-500">{{ order.items.length }} items</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                      <div class="text-right">
+                        <p class="text-[1.55rem] font-black leading-none text-primary">{{ order.totalAmount | number: '1.2-2' }}</p>
+                      </div>
+                      <a routerLink="/track-order" class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">
+                        View Details
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </section>
+      }
+
+      @if (activeTab === 'addresses') {
+        <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-900">Saved Addresses</h2>
+              <p class="mt-1 text-sm text-slate-500">Manage the locations used during checkout.</p>
+            </div>
+            <a routerLink="/checkout" class="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white">
+              <lucide-icon name="map-pin" [size]="16" class="mr-2 inline-flex"></lucide-icon>
+              Add New Address
+            </a>
+          </div>
+
+          @if (addresses.length === 0) {
+            <div class="rounded-[1.5rem] bg-slate-50 px-6 py-12 text-center">
+              <lucide-icon name="map-pin" [size]="52" class="mx-auto text-slate-300"></lucide-icon>
+              <h3 class="mt-4 text-xl font-bold text-slate-900">No address saved</h3>
+              <p class="mt-2 text-sm text-slate-500">Complete a checkout once and your shipping address will be available here.</p>
+            </div>
+          } @else {
+            <div class="grid gap-4 md:grid-cols-2">
+              @for (address of addresses; track address.id) {
+                <article class="relative rounded-[1.5rem] border border-slate-200 p-5 transition duration-200 hover:shadow-md">
+                  @if (address.defaultShipping || address.defaultBilling) {
+                    <span class="absolute right-4 top-4 rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">
+                      Default
+                    </span>
+                  }
+                  <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{{ address.label || 'Address' }}</p>
+                  <h3 class="mt-3 text-lg font-semibold text-slate-900">{{ address.recipientName }}</h3>
+                  <p class="mt-3 text-sm leading-6 text-slate-600">{{ fullAddress(address) }}</p>
+                  <p class="mt-3 text-sm text-slate-500">{{ address.phone || 'Phone not provided' }}</p>
+                  <div class="mt-5 flex gap-2">
+                    <button type="button" class="flex-1 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">
+                      Edit
+                    </button>
+                    <button type="button" class="rounded-xl border border-rose-200 px-4 py-2 text-sm font-semibold text-rose-600">
+                      Remove
+                    </button>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </section>
+      }
+
+      @if (activeTab === 'wishlist') {
+        <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <div class="py-12 text-center">
+            <lucide-icon name="heart" [size]="58" class="mx-auto text-slate-300"></lucide-icon>
+            <h2 class="mt-5 text-2xl font-bold text-slate-900">Your wishlist is empty</h2>
+            <p class="mt-2 text-sm text-slate-500">Start adding your favorite products from the shop.</p>
+            <a routerLink="/shop" class="mt-6 inline-flex rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white">
+              Browse Products
+            </a>
+          </div>
+        </section>
+      }
+
+      @if (activeTab === 'payment') {
+        <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-900">Payment & Billing</h2>
+              <p class="mt-1 text-sm text-slate-500">Invoice summary and payment method placeholder.</p>
+            </div>
+            <a [routerLink]="accountRoute('invoices')" class="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white">
+              View invoices
+            </a>
+          </div>
+
+          <div class="space-y-4">
+            <article class="flex flex-col gap-4 rounded-[1.5rem] border border-slate-200 p-5 transition duration-200 hover:shadow-md md:flex-row md:items-center md:justify-between">
+              <div class="flex items-center gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-600 text-white">
+                  <lucide-icon name="credit-card" [size]="22"></lucide-icon>
+                </div>
+                <div>
+                  <p class="font-semibold text-slate-900">Saved cards are not connected yet</p>
+                  <p class="text-sm text-slate-500">Use checkout to complete payment and invoices to review billing documents.</p>
+                </div>
+              </div>
+              <button type="button" class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">
+                Add Card
+              </button>
+            </article>
+
+            <article class="rounded-[1.5rem] bg-slate-50 p-5">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 class="text-lg font-semibold text-slate-900">Latest Invoice</h3>
+                  <p class="mt-1 text-sm text-slate-500">
+                    @if (latestInvoice) {
+                      {{ latestInvoice.invoiceNumber }} issued on {{ latestInvoice.issuedAt | date: 'mediumDate' }}
+                    } @else {
+                      No invoice available yet.
+                    }
+                  </p>
+                </div>
+                @if (latestInvoice) {
+                  <p class="text-lg font-black text-primary">{{ latestInvoice.totalAmount | number: '1.2-2' }} {{ latestInvoice.currency }}</p>
+                }
+              </div>
+            </article>
+          </div>
+        </section>
+      }
+
+      @if (activeTab === 'settings') {
+        <section class="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+          <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-2xl font-bold text-slate-900">Personal Information</h2>
+            <p class="mt-1 text-sm text-slate-500">Current profile information linked to your customer account.</p>
+
+            <div class="mt-6 grid gap-4 md:grid-cols-2">
+              <label class="block">
+                <span class="mb-2 block text-sm font-semibold text-slate-700">First Name</span>
+                <input type="text" [value]="customerDisplayName().split(' ')[0]" readonly class="bg-slate-50" />
+              </label>
+              <label class="block">
+                <span class="mb-2 block text-sm font-semibold text-slate-700">Last Name</span>
+                <input type="text" [value]="customerDisplayName().split(' ').slice(1).join(' ')" readonly class="bg-slate-50" />
+              </label>
+              <label class="block md:col-span-2">
+                <span class="mb-2 block text-sm font-semibold text-slate-700">Email Address</span>
+                <input type="email" [value]="user()?.email || ''" readonly class="bg-slate-50" />
+              </label>
+              <label class="block md:col-span-2">
+                <span class="mb-2 block text-sm font-semibold text-slate-700">Phone Number</span>
+                <input type="text" [value]="contactPhone()" readonly class="bg-slate-50" />
+              </label>
+            </div>
+
+            <button type="button" class="mt-6 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white">
+              Save Changes
+            </button>
+          </article>
+
+          <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-900">Help & Security</h2>
+            <div class="mt-6 space-y-4">
+              <a routerLink="/track-order" class="block rounded-2xl border border-slate-200 p-4 transition duration-200 hover:shadow-md">
+                <div class="flex items-center gap-3 text-primary">
+                  <lucide-icon name="truck" [size]="20"></lucide-icon>
+                  <span class="font-semibold text-slate-900">Track an order</span>
+                </div>
+                <p class="mt-2 text-sm text-slate-500">Search by order number and review delivery status.</p>
+              </a>
+              <a routerLink="/contact" class="block rounded-2xl border border-slate-200 p-4 transition duration-200 hover:shadow-md">
+                <div class="flex items-center gap-3 text-primary">
+                  <lucide-icon name="message-circle" [size]="20"></lucide-icon>
+                  <span class="font-semibold text-slate-900">Contact support</span>
+                </div>
+                <p class="mt-2 text-sm text-slate-500">Reach the team for shipping, product, or account questions.</p>
+              </a>
+              <div class="rounded-2xl border border-rose-200 bg-rose-50 p-4">
+                <h3 class="font-semibold text-rose-700">Danger Zone</h3>
+                <p class="mt-2 text-sm text-rose-600">Account deletion and advanced profile editing are not connected yet.</p>
+              </div>
+            </div>
+          </article>
+        </section>
+      }
+    }
+  </div>
+}

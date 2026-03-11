@@ -1,0 +1,66 @@
+.page-head {
+  margin-bottom: 0.8rem;
+}
+
+.page-head h1 {
+  margin: 0;
+}
+
+.info-card,
+.form-card {
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: var(--surface);
+  padding: 0.9rem;
+}
+
+.info-card {
+  margin-bottom: 0.8rem;
+}
+
+.info-card h2 {
+  margin: 0 0 0.55rem;
+  font-size: 1.05rem;
+}
+
+.info-card p {
+  margin: 0.3rem 0;
+}
+
+.small-note {
+  margin-top: 0.55rem;
+}
+
+.form-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.error-text {
+  color: #ba2424;
+  background: #ffeded;
+  border: 1px solid #f6caca;
+  border-radius: 0.5rem;
+  padding: 0.55rem;
+}
+
+.ok-text {
+  color: #0f6b35;
+  background: #e9f7ef;
+  border: 1px solid #b9e8c9;
+  border-radius: 0.5rem;
+  padding: 0.55rem;
+}
+
+@media (max-width: 700px) {
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+}

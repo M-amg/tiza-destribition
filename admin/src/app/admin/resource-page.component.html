@@ -1,0 +1,383 @@
+﻿<section class="page-head">
+  <h1>{{ pageTitle }}</h1>
+  <p>{{ pageDescription }}</p>
+</section>
+
+<section [ngSwitch]="section" class="page-body">
+  <ng-container *ngSwitchCase="'products'">
+    <article class="panel">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>SKU</th>
+              <th>Category</th>
+              <th>Stock</th>
+              <th>B2C Price</th>
+              <th>B2B Price</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of products; trackBy: trackById">
+              <td>{{ product.name }}</td>
+              <td>{{ product.sku }}</td>
+              <td>{{ product.category }}</td>
+              <td>
+                {{ product.stockQuantity }}
+                <small>min {{ product.minimumStockLevel }}</small>
+              </td>
+              <td>{{ product.b2cPrice | number : '1.2-2' }} DH</td>
+              <td>{{ product.b2bPrice | number : '1.2-2' }} DH</td>
+              <td>
+                <span class="chip" [class.chip-success]="product.status === 'active'">{{ product.status }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'categories'">
+    <article class="panel cards-grid">
+      <article class="category-card" *ngFor="let category of categories; trackBy: trackById">
+        <h3>{{ category.name }}</h3>
+        <p>{{ category.description }}</p>
+        <div>
+          <span>{{ category.slug }}</span>
+          <strong>{{ category.productCount }} products</strong>
+        </div>
+      </article>
+    </article>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'orders'">
+    <article class="panel">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Type</th>
+              <th>Total</th>
+              <th>Payment</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of orders; trackBy: trackById">
+              <td>{{ order.orderNumber }}</td>
+              <td>{{ order.date }}</td>
+              <td>{{ order.customerName }}</td>
+              <td><span class="chip" [class.chip-brand]="order.customerType === 'B2B'">{{ order.customerType }}</span></td>
+              <td>{{ order.total | number : '1.2-2' }} DH</td>
+              <td>
+                <span
+                  class="chip"
+                  [class.chip-success]="order.paymentStatus === 'paid'"
+                  [class.chip-warning]="order.paymentStatus === 'pending'"
+                  [class.chip-danger]="order.paymentStatus === 'failed'"
+                >{{ order.paymentStatus }}</span>
+              </td>
+              <td>
+                <span
+                  class="chip"
+                  [class.chip-success]="order.status === 'delivered'"
+                  [class.chip-warning]="order.status === 'pending' || order.status === 'processing'"
+                  [class.chip-danger]="order.status === 'cancelled'"
+                >{{ order.status }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'customers'">
+    <article class="panel">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Type</th>
+              <th>Email</th>
+              <th>Orders</th>
+              <th>Total Spent</th>
+              <th>Created</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let customer of customers; trackBy: trackById">
+              <td>
+                <strong>{{ customer.name }}</strong>
+                <small *ngIf="customer.company">{{ customer.company }}</small>
+              </td>
+              <td><span class="chip" [class.chip-brand]="customer.customerType === 'B2B'">{{ customer.customerType }}</span></td>
+              <td>{{ customer.email }}</td>
+              <td>{{ customer.totalOrders }}</td>
+              <td>{{ customer.totalSpent | number : '1.2-2' }} DH</td>
+              <td>{{ customer.createdDate }}</td>
+              <td><span class="chip chip-success">{{ customer.status }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'inventory'">
+    <article class="panel two-columns">
+      <div>
+        <h2>Stock Matrix</h2>
+        <div class="table-scroll">
+          <table class="data-table compact">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Stock</th>
+                <th>Min</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of inventory; trackBy: trackById">
+                <td>{{ item.productName }}</td>
+                <td>{{ item.sku }}</td>
+                <td>{{ item.stockQuantity }}</td>
+                <td>{{ item.minimumLevel }}</td>
+                <td>
+                  <span
+                    class="chip"
+                    [class.chip-success]="item.status === 'in_stock'"
+                    [class.chip-warning]="item.status === 'low_stock'"
+                    [class.chip-danger]="item.status === 'out_of_stock'"
+                  >{{ item.status }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <aside class="alert-box">
+        <h2>Restock Priority</h2>
+        <div *ngFor="let item of inventory">
+          <div *ngIf="item.status !== 'in_stock'" class="alert-item">
+            <strong>{{ item.productName }}</strong>
+            <small>{{ item.stockQuantity }} left · min {{ item.minimumLevel }}</small>
+          </div>
+        </div>
+      </aside>
+    </article>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'coupons'">
+    <article class="panel">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Segment</th>
+              <th>Min Order</th>
+              <th>Used</th>
+              <th>End Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let coupon of coupons; trackBy: trackById">
+              <td><strong>{{ coupon.code }}</strong></td>
+              <td>{{ coupon.name }}</td>
+              <td>{{ coupon.type }} {{ coupon.value }}{{ coupon.type === 'percentage' ? '%' : ' DH' }}</td>
+              <td>{{ coupon.segment }}</td>
+              <td>{{ coupon.minOrderAmount }} DH</td>
+              <td>{{ coupon.usedCount }}</td>
+              <td>{{ coupon.endDate }}</td>
+              <td>
+                <span
+                  class="chip"
+                  [class.chip-success]="coupon.status === 'active'"
+                  [class.chip-warning]="coupon.status === 'inactive'"
+                  [class.chip-danger]="coupon.status === 'expired'"
+                >{{ coupon.status }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'pricing'">
+    <article class="panel cards-grid">
+      <article class="info-card">
+        <h3>Average Margin</h3>
+        <strong>{{ averageMargin | number : '1.1-1' }}%</strong>
+        <small>Based on active B2C prices</small>
+      </article>
+      <article class="info-card">
+        <h3>B2B Product Count</h3>
+        <strong>{{ products.length }}</strong>
+        <small>All products support B2B pricing</small>
+      </article>
+      <article class="info-card">
+        <h3>High Margin SKUs</h3>
+        <strong>{{ highMarginSkuCount }}</strong>
+        <small>Focus for promotions</small>
+      </article>
+    </article>
+
+    <article class="panel">
+      <h2>Top Pricing Opportunities</h2>
+      <div class="table-scroll">
+        <table class="data-table compact">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Cost</th>
+              <th>B2C</th>
+              <th>B2B</th>
+              <th>Margin</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of products | slice : 0 : 6; trackBy: trackById">
+              <td>{{ product.name }}</td>
+              <td>{{ product.costPrice | number : '1.2-2' }} DH</td>
+              <td>{{ product.b2cPrice | number : '1.2-2' }} DH</td>
+              <td>{{ product.b2bPrice | number : '1.2-2' }} DH</td>
+              <td>{{ ((product.b2cPrice - product.costPrice) / product.costPrice) * 100 | number : '1.1-1' }}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'reports'">
+    <article class="panel cards-grid">
+      <article class="info-card">
+        <h3>Total Revenue</h3>
+        <strong>{{ revenueTotal | number : '1.0-2' }} DH</strong>
+      </article>
+      <article class="info-card">
+        <h3>Total Orders</h3>
+        <strong>{{ orders.length }}</strong>
+      </article>
+      <article class="info-card">
+        <h3>Average Ticket</h3>
+        <strong>{{ revenueTotal / orders.length | number : '1.2-2' }} DH</strong>
+      </article>
+    </article>
+
+    <article class="panel">
+      <h2>Monthly Performance</h2>
+      <div class="bars">
+        <div class="bar-row" *ngFor="let metric of metrics">
+          <span>{{ metric.month }}</span>
+          <div class="bar-track">
+            <div class="bar-fill" [style.width.%]="(metric.orders / 80) * 100"></div>
+          </div>
+          <strong>{{ metric.orders }} orders</strong>
+        </div>
+      </div>
+    </article>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'users'">
+    <article class="panel">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Last Login</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users; trackBy: trackById">
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span
+                  class="chip"
+                  [class.chip-brand]="user.role === 'super_admin' || user.role === 'admin'"
+                >{{ user.role }}</span>
+              </td>
+              <td>
+                <span
+                  class="chip"
+                  [class.chip-success]="user.status === 'active'"
+                  [class.chip-warning]="user.status === 'inactive'"
+                >{{ user.status }}</span>
+              </td>
+              <td>{{ user.createdDate }}</td>
+              <td>{{ user.lastLogin }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'settings'">
+    <article class="panel settings-grid">
+      <section>
+        <h2>Store Defaults</h2>
+        <label>
+          Store Name
+          <input type="text" value="Tiza Distribution" />
+        </label>
+        <label>
+          Support Email
+          <input type="email" value="support@tizadistribution.com" />
+        </label>
+        <label>
+          Default Currency
+          <select>
+            <option>DH</option>
+            <option>EUR</option>
+            <option>MAD</option>
+          </select>
+        </label>
+      </section>
+
+      <section>
+        <h2>Operational Rules</h2>
+        <label>
+          Low Stock Threshold
+          <input type="number" value="20" />
+        </label>
+        <label>
+          Enable B2B Pricing
+          <select>
+            <option>Enabled</option>
+            <option>Disabled</option>
+          </select>
+        </label>
+        <label>
+          New Order Notifications
+          <select>
+            <option>Immediate</option>
+            <option>Hourly digest</option>
+          </select>
+        </label>
+      </section>
+    </article>
+  </ng-container>
+</section>

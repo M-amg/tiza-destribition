@@ -1,0 +1,293 @@
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.stat-card {
+  padding: 1rem;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 18px rgb(15 23 42 / 9%);
+}
+
+.stat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.55rem;
+}
+
+.stat-head p {
+  color: var(--muted-foreground);
+  font-size: 0.82rem;
+}
+
+.stat-card strong {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.stat-icon {
+  display: inline-flex;
+}
+
+.icon-primary {
+  color: var(--primary);
+}
+
+.icon-warning {
+  color: #ca8a04;
+}
+
+.icon-danger {
+  color: #dc2626;
+}
+
+.status-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+}
+
+.status-in-stock {
+  background: #16a34a;
+}
+
+.value-success {
+  color: #16a34a;
+}
+
+.value-warning {
+  color: #ca8a04;
+}
+
+.value-danger {
+  color: #dc2626;
+}
+
+.tabs-wrap {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.loading-message,
+.error-message,
+.success-message {
+  margin: 0;
+  font-size: 0.84rem;
+}
+
+.loading-message {
+  color: var(--muted-foreground);
+}
+
+.error-message {
+  color: #b91c1c;
+}
+
+.success-message {
+  color: #15803d;
+}
+
+.tabs-list {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.24rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 0.04rem);
+  background: color-mix(in srgb, var(--muted) 48%, transparent);
+}
+
+.tab-trigger {
+  border: 0;
+  background: transparent;
+  color: var(--muted-foreground);
+  min-height: 2rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.tab-trigger:hover {
+  color: var(--foreground);
+}
+
+.tab-trigger.active {
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+}
+
+.filters-panel {
+  padding: 1.2rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: 1.4fr minmax(0, 1fr);
+  gap: 0.9rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field label {
+  color: var(--muted-foreground);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.search-wrap {
+  position: relative;
+}
+
+.search-wrap input {
+  padding-left: 2.2rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+.table-panel {
+  padding: 1rem;
+}
+
+.inventory-table th:last-child,
+.inventory-table td:last-child {
+  width: 8.5rem;
+}
+
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.thumb {
+  width: 2.85rem;
+  height: 2.85rem;
+  border-radius: 0.52rem;
+  object-fit: cover;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.product-cell strong {
+  font-size: 0.9rem;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.8rem;
+}
+
+.chip-outline {
+  background: transparent;
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.stock-qty {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.chip-status {
+  text-transform: capitalize;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.text-sm {
+  font-size: 0.82rem;
+}
+
+.empty-cell {
+  text-align: center;
+  color: var(--muted-foreground);
+  padding: 2rem 0;
+}
+
+.history-panel h2 {
+  margin: 0 0 0.9rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.type-restock {
+  color: #15803d;
+  border-color: #22c55e;
+}
+
+.type-sale {
+  color: #1d4ed8;
+  border-color: #60a5fa;
+}
+
+.type-return {
+  color: #7e22ce;
+  border-color: #c084fc;
+}
+
+.type-adjustment {
+  color: #4b5563;
+  border-color: #9ca3af;
+}
+
+.qty {
+  font-weight: 700;
+}
+
+.qty-positive {
+  color: #16a34a;
+}
+
+.qty-negative {
+  color: #dc2626;
+}
+
+@media (max-width: 1180px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .stats-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .filters-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tabs-list {
+    width: 100%;
+  }
+
+  .tab-trigger {
+    flex: 1;
+  }
+}

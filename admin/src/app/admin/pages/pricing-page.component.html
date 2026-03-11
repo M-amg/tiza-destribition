@@ -1,0 +1,65 @@
+﻿<section class="page-head">
+  <div>
+    <h1>Pricing</h1>
+    <p>Manage margins and apply bulk price operations.</p>
+  </div>
+</section>
+
+<section class="cards-row">
+  <article class="panel metric"><small>Average Margin</small><strong>{{ averageMargin | number : '1.1-1' }}%</strong></article>
+  <article class="panel metric"><small>Products</small><strong>{{ data.products.length }}</strong></article>
+  <article class="panel metric"><small>B2B-enabled</small><strong>{{ data.products.length }}</strong></article>
+</section>
+
+<section class="panel form-panel">
+  <h2>Bulk Pricing Update</h2>
+  <div class="controls">
+    <label>
+      Adjustment Type
+      <select [(ngModel)]="selectedAdjustmentType">
+        <option value="percentage">Percentage</option>
+        <option value="fixed">Fixed amount</option>
+      </select>
+    </label>
+    <label>
+      Value
+      <input type="number" [(ngModel)]="adjustmentValue" />
+    </label>
+    <label>
+      Apply To
+      <select [(ngModel)]="applyToSegment">
+        <option value="B2B">B2B</option>
+        <option value="B2C">B2C</option>
+        <option value="both">Both</option>
+      </select>
+    </label>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="applyAdjustment()">Apply Update</button>
+  <p *ngIf="applied" class="saved">Adjustment queued locally (mock mode).</p>
+</section>
+
+<section class="panel">
+  <h2>Pricing Matrix</h2>
+  <div class="table-scroll">
+    <table class="data-table compact">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Cost</th>
+          <th>B2C</th>
+          <th>B2B</th>
+          <th>Margin</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of data.products; trackBy: trackById">
+          <td>{{ product.name }}</td>
+          <td>{{ product.costPrice | number : '1.2-2' }} DH</td>
+          <td>{{ product.b2cPrice | number : '1.2-2' }} DH</td>
+          <td>{{ product.b2bPrice | number : '1.2-2' }} DH</td>
+          <td>{{ ((product.b2cPrice - product.costPrice) / product.costPrice) * 100 | number : '1.1-1' }}%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

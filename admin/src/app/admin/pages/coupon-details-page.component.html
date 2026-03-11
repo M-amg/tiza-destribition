@@ -1,0 +1,209 @@
+<section class="panel empty-state" *ngIf="loading">
+  <h2>Loading coupon details...</h2>
+</section>
+
+<section *ngIf="!loading && coupon; else missingCoupon" class="coupon-details">
+  <header class="details-head">
+    <div class="head-left">
+      <a routerLink="/coupons" class="btn btn-ghost btn-sm">
+        <lucide-icon [img]="iconBack" [size]="16"></lucide-icon>
+        Back
+      </a>
+      <div>
+        <h1>{{ coupon.code }}</h1>
+        <p>{{ coupon.name }}</p>
+      </div>
+    </div>
+    <a [routerLink]="['/coupons', coupon.id, 'edit']" class="btn btn-primary">
+      <lucide-icon [img]="iconEdit" [size]="16"></lucide-icon>
+      Edit Coupon
+    </a>
+  </header>
+
+  <section class="details-grid">
+    <div class="main-col">
+      <article class="panel section-card">
+        <h2>Coupon Information</h2>
+
+        <div class="info-grid">
+          <div>
+            <small>Code</small>
+            <strong class="mono big">{{ coupon.code }}</strong>
+          </div>
+          <div>
+            <small>Status</small>
+            <span [class]="couponStatusChipClass[coupon.status]">{{ coupon.status }}</span>
+          </div>
+          <div>
+            <small>Discount Type</small>
+            <strong>{{ coupon.type === 'percentage' ? 'Percentage' : 'Fixed Amount' }}</strong>
+          </div>
+          <div>
+            <small>Discount Value</small>
+            <strong class="primary big">{{ couponValueLabel() }}</strong>
+          </div>
+          <div *ngIf="coupon.maxDiscountCap">
+            <small>Maximum Cap</small>
+            <strong>{{ coupon.maxDiscountCap | number : '1.0-0' }} DH</strong>
+          </div>
+          <div>
+            <small>Customer Segment</small>
+            <span class="segment-badge" [class.segment-b2b]="coupon.segment === 'B2B'" [class.segment-b2c]="coupon.segment === 'B2C'" [class.segment-all]="coupon.segment === 'all'">
+              {{ coupon.segment === 'all' ? 'All Customers' : coupon.segment + ' Only' }}
+            </span>
+          </div>
+          <div>
+            <small>Applies To</small>
+            <strong>
+              {{ coupon.applicability === 'categories' ? 'Specific Categories' : coupon.applicability === 'products' ? 'Specific Products' : 'Entire Store' }}
+            </strong>
+          </div>
+          <div *ngIf="coupon.minOrderAmount > 0">
+            <small>Minimum Order</small>
+            <strong>{{ coupon.minOrderAmount | number : '1.0-0' }} DH</strong>
+          </div>
+          <div>
+            <small>Usage Limit</small>
+            <strong>{{ coupon.usedCount }} / {{ coupon.usageLimitTotal || 'Unlimited' }}</strong>
+          </div>
+          <div *ngIf="coupon.usageLimitPerCustomer">
+            <small>Per Customer</small>
+            <strong>{{ coupon.usageLimitPerCustomer }} use(s)</strong>
+          </div>
+          <div>
+            <small>Start Date</small>
+            <strong>{{ coupon.startDate }}</strong>
+          </div>
+          <div>
+            <small>End Date</small>
+            <strong>{{ coupon.endDate || 'No expiration' }}</strong>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Orders Using This Coupon</h2>
+
+        <div class="empty-block" *ngIf="relatedOrders.length === 0">
+          <lucide-icon [img]="iconTag" [size]="40"></lucide-icon>
+          <p>No orders have used this coupon yet</p>
+        </div>
+
+        <div class="table-scroll" *ngIf="relatedOrders.length > 0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order Number</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Discount</th>
+                <th class="text-right">Total</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of relatedOrders; trackBy: trackById">
+                <td class="semi">{{ order.orderNumber }}</td>
+                <td>
+                  <strong>{{ order.customerName }}</strong>
+                  <small>{{ order.customerEmail }}</small>
+                </td>
+                <td>{{ order.date }}</td>
+                <td><span [class]="orderStatusChipClass[order.status]">{{ order.status }}</span></td>
+                <td class="discount">-{{ (order.couponDiscount || 0) | number : '1.2-2' }} DH</td>
+                <td class="text-right semi">{{ order.total | number : '1.2-2' }} DH</td>
+                <td>
+                  <div class="actions">
+                    <a class="btn btn-ghost btn-sm btn-icon" [routerLink]="['/orders', order.id]">
+                      <lucide-icon [img]="iconEye" [size]="16"></lucide-icon>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+
+    <aside class="side-col">
+      <article class="panel section-card">
+        <h2>Usage Statistics</h2>
+
+        <div class="stats-stack">
+          <div class="mini-stat primary-bg">
+            <div class="icon-wrap icon-primary"><lucide-icon [img]="iconTag" [size]="18"></lucide-icon></div>
+            <div>
+              <small>Total Uses</small>
+              <strong class="metric-primary">{{ coupon.usedCount }}</strong>
+            </div>
+          </div>
+
+          <div class="mini-stat brand-bg">
+            <div class="icon-wrap icon-brand"><lucide-icon [img]="iconUsers" [size]="18"></lucide-icon></div>
+            <div>
+              <small>Unique Customers</small>
+              <strong class="metric-brand">{{ uniqueCustomers }}</strong>
+            </div>
+          </div>
+
+          <div class="mini-stat accent-bg">
+            <div class="icon-wrap icon-accent"><lucide-icon [img]="iconDollar" [size]="18"></lucide-icon></div>
+            <div>
+              <small>Total Discount</small>
+              <strong class="metric-accent">{{ totalDiscount | number : '1.2-2' }} DH</strong>
+            </div>
+          </div>
+
+          <div class="mini-stat success-bg">
+            <div class="icon-wrap icon-success"><lucide-icon [img]="iconTrend" [size]="18"></lucide-icon></div>
+            <div>
+              <small>Total Revenue</small>
+              <strong class="metric-success">{{ totalRevenue | number : '1.2-2' }} DH</strong>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel section-card">
+        <h2>Performance</h2>
+
+        <dl class="summary-list">
+          <div><dt>Avg. Order Value:</dt><dd>{{ averageOrderValue | number : '1.2-2' }} DH</dd></div>
+          <div><dt>Conversion Rate:</dt><dd>{{ conversionRate | number : '1.1-1' }}%</dd></div>
+          <div><dt>Remaining Uses:</dt><dd>{{ remainingUses }}</dd></div>
+        </dl>
+      </article>
+
+      <article class="panel preview-card">
+        <h3>Coupon Preview</h3>
+        <div class="preview-box">
+          <div class="icon-wrap"><lucide-icon [img]="iconTag" [size]="28"></lucide-icon></div>
+          <div class="code">{{ coupon.code }}</div>
+          <div class="value">{{ couponValueLabel() }} OFF</div>
+          <p *ngIf="coupon.maxDiscountCap">Up to {{ coupon.maxDiscountCap | number : '1.0-0' }} DH</p>
+          <p *ngIf="coupon.minOrderAmount > 0">Min. order: {{ coupon.minOrderAmount | number : '1.0-0' }} DH</p>
+        </div>
+      </article>
+
+      <article class="panel section-card actions-card">
+        <h2>Actions</h2>
+        <a [routerLink]="['/coupons', coupon.id, 'edit']" class="btn btn-primary">
+          <lucide-icon [img]="iconEdit" [size]="16"></lucide-icon>
+          Edit Coupon
+        </a>
+        <button type="button" class="btn btn-secondary">Duplicate Coupon</button>
+        <button type="button" class="btn btn-danger">Deactivate Coupon</button>
+      </article>
+    </aside>
+  </section>
+</section>
+
+<ng-template #missingCoupon>
+  <section class="panel empty-state">
+    <h2>Coupon not found</h2>
+    <p>{{ errorMessage || 'This coupon id does not exist.' }}</p>
+    <a routerLink="/coupons" class="btn btn-primary">Return to coupons</a>
+  </section>
+</ng-template>
