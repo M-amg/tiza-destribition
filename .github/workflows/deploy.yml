@@ -73,11 +73,11 @@ jobs:
     needs: validate
     environment: production
     env:
-      DEPLOY_HOST: 199.192.21.203
-      DEPLOY_USER: swiftsell
+      DEPLOY_HOST: ${{ secrets.DEPLOY_SERVER }}
+      DEPLOY_USER:  ${{ secrets.DEPLOY_USER }}
       DEPLOY_PORT: '22'
       DEPLOY_PATH: /var/www/tiza
-      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      DEPLOY_SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       API_SERVICE_NAME: ${{ vars.API_SERVICE_NAME || 'tiza-api' }}
       WEBSITE_SERVICE_NAME: ${{ vars.WEBSITE_SERVICE_NAME || 'tiza-web' }}
       API_DIR: /var/www/tiza/api
