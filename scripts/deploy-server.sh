@@ -32,6 +32,17 @@ cd "${WEBSITE_DIR}"
 npm ci --omit=dev
 
 if command -v systemctl >/dev/null 2>&1; then
-  sudo systemctl restart "${API_SERVICE_NAME}"
-  sudo systemctl restart "${WEBSITE_SERVICE_NAME}"
+  restart_service() {
+    local service_name="$1"
+
+    if ! sudo systemctl restart "${service_name}"; then
+      echo "Failed to restart ${service_name}" >&2
+      sudo systemctl status "${service_name}" --no-pager -l || true
+      sudo journalctl -xeu "${service_name}" --no-pager -n 80 || true
+      exit 1
+    fi
+  }
+
+  restart_service "${API_SERVICE_NAME}"
+  restart_service "${WEBSITE_SERVICE_NAME}"
 fi
